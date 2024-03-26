@@ -3,10 +3,6 @@ import cors         from 'cors';
 import helmet       from 'helmet';
 import cookieParser from 'cookie-parser';
 
-// const cors = require('cors');}
-// const cookieParser = require('cookie-parser');
-// const helmet = require('helmet');
-
 const app: Application = express();
 
 app.use(cors());
@@ -32,6 +28,4 @@ app.all('*', (req, res) => {
 //     next();
 // })
 
-
-// module.exports = app;
 export default app;
