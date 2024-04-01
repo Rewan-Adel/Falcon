@@ -7,11 +7,18 @@ exports.serverErrorMessage = (error) =>{
     });
 };
 
-exports.notFoundErrorMessage = (error) =>{
-    return res.status(500).json({
+exports.notFoundErrorMessage = (msg) =>{
+    return res.status(404).json({
         status: "fail",
         code: 404,
-        message: "Not Found!",
-        error: error
+        message: msg || "Not Found!",
+    });
+};
+
+exports.badRequestMessage = (msg) =>{
+    return res.status(400).json({
+        status: "fail",
+        code: 400,
+        message: msg || "Bad Request",
     });
 };
