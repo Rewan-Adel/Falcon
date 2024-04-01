@@ -1,5 +1,6 @@
 const {Sequelize} = require('sequelize');
 require('dotenv').config();
+
 class Database{
     sequelize;
 
