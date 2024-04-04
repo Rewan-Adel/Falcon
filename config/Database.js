@@ -2,28 +2,28 @@ const {Sequelize} = require('sequelize');
 require('dotenv').config();
 
 class Database{
-    sequelize;
-
     constructor(){
-        this.connectToDatabase()
+        this.connectToDatabase();
+        this.initDB();
     }
-    async connectToDatabase(){
+     
+    connectToDatabase(){
         this.sequelize = new Sequelize({
             database : process.env.DB_NAME,
             host     : process.env.DB_HOST,
             username : process.env.DB_USER,
             password : process.env.DB_PASSWORD, 
 
-            dialect: 'mysql'
+            dialect: 'mysql',
+            logging: false
         });
+    }
 
-        await this.sequelize.authenticate().then(()=>{
-            console.log('Connection has been established successfully.');
-        }).catch((err)=>{
-            console.log('Unable to connect to db.');
-            console.error(err);
-        })
+    initDB(){
+        this.sequelize.sync()
+            .then(()=>{ console.log('DB sync....');})
+            .catch((err)=>{console.log('Error in sync',err);} ); 
     }
 };
 
-module.exports = Database;
+module.exports = new Database().sequelize;
