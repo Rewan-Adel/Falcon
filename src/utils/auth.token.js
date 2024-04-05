@@ -19,7 +19,7 @@ const protect = async(req, res, nxt)=>{
         let decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findByPk(decoded.id);
 
-        if(!user) return notFoundErrorMessage("Invalid token");
+        if(!user) return notFoundErrorMessage("Invalid token", res);
 
         if(user.passChangedAt > decoded.iat) return unauthorizedMessage('User recently changed password. Please login again.', res);
 
@@ -29,14 +29,14 @@ const protect = async(req, res, nxt)=>{
     }
     catch(error){
         console.log('Error at token.middleware file: ', error);
-        serverErrorMessage(error);
+        serverErrorMessage(error, res);
     }
 };
 
-const generateToken = async(user, res)=>{
+const generateToken = async(userID, res)=>{
     try{
-        const token = jwt.sign({ id: user.userID}, process.env.JWT_SECRET, {expiresIn: '90d'});
-        res.cookies('jwt', token,{
+        const token = jwt.sign({ id: userID}, process.env.JWT_SECRET, {expiresIn: '90d'});
+        res.cookie('jwt', token,{
             httpOnly: true,
             sameSite : 'strict', // csrf protection
             secure: process.env.NODE_ENV === 'production' ? true : false, 

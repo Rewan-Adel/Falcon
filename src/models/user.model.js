@@ -5,7 +5,7 @@ const {badRequestMessage} = require('../middlewares/error.messages.middleware');
 const bcrypt = require('bcrypt');
 
 const User = db.define('User',{
-    user:{
+    userID:{
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -46,16 +46,13 @@ const User = db.define('User',{
     },
     email:{
         type: DataTypes.STRING,
-        defaultValue: `example@gmail.com`,
         unique: true,
         validate:{
-            //notNull: {msg: 'Email is required.'},
             isEmail: { msg: 'Invalid email format.' } 
         }
     },
     password:{
         type: DataTypes.STRING,
-     //   defaultValue: '0000000',
         validate:{
             len    : {
                 args: [6],
@@ -64,7 +61,6 @@ const User = db.define('User',{
     },
     confirmPassword:{  
         type: DataTypes.STRING,
-     //   defaultValue: '0000000',
         validate:{
             len    : {
                 args: [6],
@@ -73,7 +69,7 @@ const User = db.define('User',{
     },
     username:{
         type: DataTypes.STRING,
-    //    defaultValue: 'username',
+        unique: true,
         validate:{
             len: {
                 args: [3, 25],
@@ -106,16 +102,18 @@ const User = db.define('User',{
     auctionBid       :{type: DataTypes.DECIMAL},
     isVerified       :{type: DataTypes.BOOLEAN, defaultValue: false },
     otp              :{type: DataTypes.STRING},
+    otpCount         :{type: DataTypes.INTEGER, defaultValue: 0},
+    otpExpires       :{type: DataTypes.DATE},
     passChangedAt    :{type: DataTypes.DATE} ,
     passResetToken   :{type: DataTypes.STRING},
     passResetExpires :{type: DataTypes.DATE},
 },{
     timestamps: false
 });
-const EXCLUDED_FIELDS = ['password', 'confirmPassword', 'verifyCode', 'passChangedAt', 'passResetToken', 'passResetExpires'];
+const EXCLUDED_FIELDS = ['password', 'confirmPassword', 'passChangedAt', 'passResetToken', 'passResetExpires', 'otp', 'otpCount', 'otpExpires'];
 
 User.prototype.toJSON = function(){
-    let user = this.values;
+    let user = this.dataValues;
     EXCLUDED_FIELDS.forEach(field => delete user[field]);
     return user;
 }
