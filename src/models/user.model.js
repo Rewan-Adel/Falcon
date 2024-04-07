@@ -29,7 +29,6 @@ const User = db.define('User',{
         allowNull: true,
         defaultValue: 'User',
         validate: {
-           // notNull: { msg: 'lastName is required.' },
             isAlpha: {
                 msg: 'lastName should only contain alphabetic characters.'
             },
@@ -120,10 +119,7 @@ User.prototype.toJSON = function(){
 
 User.beforeSave(async(user) => {
     if(user.changed('password')){
-        if(user.password != user.confirmPassword)
-            return badRequestMessage('Passwords do not match.');
-
-        user.password = await bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
+        user.password = await bcrypt.hashSync(user.password, 10);
         user.confirmPassword = undefined;    
     };
 });
