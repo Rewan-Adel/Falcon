@@ -1,9 +1,10 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 
+const sendCodeToEmail = require('../utils/sendCodeToEmail');
+
 const {emailValidation, completeValidation, usernameValidation} = require('../validation/signup.validation');
 const {generateToken} = require('../utils/auth.token');
-const {sendCodeToEmail} = require('../utils/verificationCode');
 const {
     serverErrorMessage,
     notFoundErrorMessage,

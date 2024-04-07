@@ -23,7 +23,7 @@ const updateUser = async(user, hashedOtp)=>{
     });
 }
 
-const sendCodeToEmail = async(user)=>{
+module.exports =  async(user)=>{
     try{  
         let otp = generateCode();
         await sendMail(user.email, otp);
@@ -34,7 +34,3 @@ const sendCodeToEmail = async(user)=>{
     }catch(error){
     console.error(error);
 }};
-
-module.exports = {
-    sendCodeToEmail
-};
