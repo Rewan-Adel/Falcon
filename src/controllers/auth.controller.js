@@ -52,6 +52,7 @@ const verifyCode = async(req, res, next)=>{
         return res.status(200).json({
             status: 'success',
             code: 200,
+            isVerified: true,
             message: 'User has been verified.'
         });
     }catch(error){
