@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
-const { serverErrorMessage,unauthorizedMessage, notFoundErrorMessage } = require('../middlewares/error.messages.middleware');
+const { serverErrorMessage,unAuthorizedMessage, notFoundMessage } = require('../middlewares/error.messages.middleware');
 
 const protect = async(req, res, nxt)=>{
     try{
@@ -14,14 +14,14 @@ const protect = async(req, res, nxt)=>{
         else if(req.cookies.jwt) 
             token = req.cookies.jwt;
         
-        if(!token) return unauthorizedMessage('Please login for get access', res);
+        if(!token) return unAuthorizedMessage('Please login for get access', res);
 
         let decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findByPk(decoded.id);
+        const user = await User.findByPk(decoded.userID);
 
-        if(!user) return notFoundErrorMessage("Invalid token", res);
+        if(!user) return notFoundMessage("Invalid token", res);
 
-        if(user.passChangedAt > decoded.iat) return unauthorizedMessage('User recently changed password. Please login again.', res);
+        if(user.passChangedAt > decoded.iat) return unAuthorizedMessage('User recently changed password. Please login again.', res);
 
         req.token = token;
         req.user  = user;
@@ -35,7 +35,7 @@ const protect = async(req, res, nxt)=>{
 
 const generateToken = async(userID, res)=>{
     try{
-        const token = jwt.sign({ id: userID}, process.env.JWT_SECRET, {expiresIn: '90d'});
+        const token = jwt.sign({userID}, process.env.JWT_SECRET, {expiresIn: '90d'});
         res.cookie('jwt', token,{
             httpOnly: true,
             sameSite : 'strict', // csrf protection

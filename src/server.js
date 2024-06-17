@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const cors = require('cors');
 
-const {notFoundErrorMessage} = require('./middlewares/error.messages.middleware')
+const {notFoundError} = require('./middlewares/error.messages.middleware')
 
 const authRouter = require('./routes/auth.route');
 
@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 
 app.all('*', (req, res) => {
-    return notFoundErrorMessage(`Can't find ${req.originalUrl} on this server!`, res);
+    return notFoundError(`Can't find ${req.originalUrl} on this server!`, res);
 });
 const port = process.env.PORT || 3000;
 

@@ -2,11 +2,11 @@ const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-class Email{
-    
+class Email {
     constructor(to){
-        this.from = process.env.EMAIL_FROM;
-        this.to = to;
+        this.from    = process.env.EMAIL_FROM;
+        this.to      = to;
+        this.subject = 'Falconion'
     };
 
     async send(msg){
@@ -23,14 +23,14 @@ class Email{
         <h3 style="color: #000; font-weight: bold;"Falconion<br></h3>
         <p style="color: #666;">Your verification code is:<br></p>
         <p style="color: #333; font-size: 24px; font-weight: bold;">${otp}</p>
-        <p style="color: #666;">valid for only  15  minutes.</p>`
+        <p style="color: #666;">valid for only  5  minutes.</p>`
 
         return await this.send({
-            from: this.from,
-            to  : this.to,
-            subject: 'Falconion',
-            text: 'Verify your email',
-            html:  htmlContent
+            from   : this.from,
+            to     : this.to,
+            subject: this.subject,
+            text   : 'Verify your email',
+            html   :  htmlContent
         });
     };
 
@@ -41,14 +41,14 @@ class Email{
         <p style="color: #666;">You requested to reset your password.<br></p>
         <p style="color: #666;">Click the link below to reset your password.<br></p>
         <a href="${url}">${url}</a>
-        <p style="color: #666;">valid for only  15  minutes.</p>`;
+        <p style="color: #666;">valid for only  10  minutes.</p>`;
 
         return await this.send({
-            from: this.from,
-            to  : this.to,
-            subject: 'Falconion',
-            text: 'Reset your password',
-            html: htmlContent
+            from   : this.from,
+            to     : this.to,
+            subject: this.subject,
+            text   : 'Reset your password',
+            html   : htmlContent
         });
     }
 };

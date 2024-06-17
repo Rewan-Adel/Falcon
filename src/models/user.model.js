@@ -1,7 +1,5 @@
 const {DataTypes} = require('sequelize');
 const db = require('../config/Database');
-
-const {badRequestMessage} = require('../middlewares/error.messages.middleware');
 const bcrypt = require('bcrypt');
 
 const User = db.define('User',{
@@ -98,6 +96,7 @@ const User = db.define('User',{
     description:{
         type: DataTypes.TEXT
     },
+    signupWay        :{type: DataTypes.STRING, enum: ['email', 'phone', 'apple', 'twitter']},
     auctionBid       :{type: DataTypes.DECIMAL},
     isVerified       :{type: DataTypes.BOOLEAN, defaultValue: false },
     otp              :{type: DataTypes.STRING},
@@ -121,6 +120,7 @@ User.beforeSave(async(user) => {
     if(user.changed('password')){
         user.password = await bcrypt.hashSync(user.password, 10);
         user.confirmPassword = undefined;    
+        console.log(user.password)
     };
 });
 

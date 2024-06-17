@@ -1,28 +1,31 @@
 const Joi = require('joi');
 
 const schemas = {
-    // Validation for email
     email: Joi.object({
         email     : Joi.string().max(100).email().required().trim(),
     }).unknown(),
 
-    // Validation for phone number
     phone: Joi.object({
         phone     : Joi.string().max(14).required().trim(),
     }).unknown(),
     
-
-    // Validation for username
     username: Joi.object({
-        username  : Joi.string().max(25).required().trim().alphanum(),
+        username  : Joi.string().min(5).max(25).required().trim().alphanum().messages({
+            "string.empty": "username is required."
+        }),
     }).unknown(),
 
-    // Validation for complete profile
     completeData: Joi.object({
-        firstName : Joi.string().max(25).required().trim(),
-        lastName  : Joi.string().max(25).required().trim(),
-        password  : Joi.string().min(6).required().trim(),
-        confirmPassword: Joi.string().min(6).required().trim().valid(Joi.ref('password')).messages({'any.only': 'passwords do not match'}),
+        firstName : Joi.string().max(25).required().trim().messages({
+            "string.empty": "First name is required."
+        }),
+        lastName  : Joi.string().max(25).required().trim().messages({
+            "string.empty": "Last name is required."
+        }),
+        password  : Joi.string().min(6).required().trim().messages({
+            "string.empty": "Password is required."
+        }),
+        confirmPassword: Joi.string().min(6).required().trim().valid(Joi.ref('password')).messages({ "string.empty": "Confirm password is required.", 'any.only': 'Passwords do not match'}),
     }).unknown()
 }
 

@@ -7,14 +7,6 @@ exports.serverErrorMessage = (error, res) =>{
     });
 };
 
-exports.notFoundErrorMessage = (msg, res) =>{
-    return res.status(404).json({
-        status: "fail",
-        code: 404,
-        message: msg ,
-    });
-};
-
 exports.badRequestMessage = (msg, res) =>{
     return res.status(400).json({
         status: "fail",
@@ -23,10 +15,26 @@ exports.badRequestMessage = (msg, res) =>{
     });
 };
 
-exports.unauthorizedMessage = (msg, res) =>{
+exports.unAuthorizedMessage = (msg, res) =>{
     return res.status(401).json({
-        status: "fail",
-        code: 401,
+        status : "fail",
+        code   : 401,
         message: msg,
+    });
+};
+
+exports.notFoundError = (msg, res) =>{
+    return res.status(404).json({
+        status : "fail",
+        code   : 404,
+        message: msg ,
+    });
+};
+
+exports.notFoundMessage = (msg, res) =>{
+    return res.status(200).json({
+        status : "success",
+        code   : 200,
+        message: msg || "Not found!",
     });
 }
