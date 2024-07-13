@@ -102,6 +102,7 @@ const User = db.define('User',{
     otp              :{type: DataTypes.STRING},
     otpCount         :{type: DataTypes.INTEGER, defaultValue: 0},
     otpExpires       :{type: DataTypes.DATE},
+  
     passChangedAt    :{type: DataTypes.DATE} ,
     passResetToken   :{type: DataTypes.STRING},
     passResetExpires :{type: DataTypes.DATE},

@@ -1,7 +1,8 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
+const { google } = require('googleapis');
 
-const {sendVerifyEmail} = require('../utils/sendCodeToEmail');
+const {sendVerifyEmail, resetPasswordEmail} = require('../utils/sendCodeToEmail');
 
 const {emailValidation, completeValidation, usernameValidation} = require('../validation/signup.validation');
 const {generateToken} = require('../utils/auth.token');
@@ -14,38 +15,64 @@ const {
 const register = async(req, res, next)=>{
     try{
         let registerWay = req.params.way;
-        if(registerWay == 'email'){
-        let { error, value } = emailValidation(req.body);
-        if(error) return badRequestMessage(error.message, res);
 
-
-        let user = await User.findOne({where: {email: value.email}});
-        if( user ) return badRequestMessage('Email already exists', res);
-
-        user = await User.create(value);
-        user.signupWay = 'email';
-        await user.save();
-        await sendVerifyEmail(user);
-
-        let token = await generateToken(user.userID, res);
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            sameSite: 'strict',
-            secure: process.env.NODE_ENV === 'production' ? true : false,
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-        return res.status(201).json({
-            status: 'success',
-            code: 201,
-            message: 'Verification code is sent.',
-            token: token
-        });
-    }
+        switch(registerWay){
+            case 'email'  : emailRegister(req, res);   break;
+            case 'google' : googleRegister(req, res);  break;
+            case 'phone'  : phoneRegister(req, res);   break;
+            case 'apple'  : appleRegister(req, res);   break;
+            case 'twitter': twitterRegister(req, res); break;
+            default:
+                return badRequestMessage('Invalid register way.', res);
+        };
+    
     }catch(error){
-        console.log('Error in auth.controller.js: ',error);
+        console.log('Error in auth.controller.js, register function: ',error);
         serverErrorMessage(error, res);
     }
 };
+async function emailRegister(req, res){
+    let { error, value } = emailValidation(req.body);
+    if(error) return badRequestMessage(error.message, res);
+
+
+    let user = await User.findOne({where: {email: value.email}});
+    if( user ) return badRequestMessage('Email already exists', res);
+
+    user = await User.create(value);
+    user.signupWay = 'email';
+    await user.save();
+    await sendVerifyEmail(user);
+
+    let token = await generateToken(user.userID, res);
+    res.cookie('jwt', token, {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    return res.status(201).json({
+        status: 'success',
+        code: 201,
+        message: 'Verification code is sent.',
+        token: token
+    });
+}
+async function googleRegister(req, res){
+    let { error, value } = emailValidation(req.body);
+    if(error) return badRequestMessage(error.message, res);
+
+    let user = await User.findOne({where: {email: value.email}});
+    if( user ) return res.redirect('/login/google');
+    
+
+    user = await User.create(value);
+    user.signupWay = 'google';
+}
+async function phoneRegister(req, res){}
+async function appleRegister(req, res){}
+async function twitterRegister(req, res){}
+
 
 const verifyCode = async(req, res, next)=>{
     try{
@@ -204,6 +231,38 @@ const loginPass = async(req, res, next)=>{
     console.log('Error in auth.controller.js: ',error);
     serverErrorMessage(error, res);
 }
+};
+
+const resetPassword = async(req, res, next)=>{
+    try{
+        let {way} = req.params;
+        if(way == 'email'){
+            let {email} =  req.body;
+            let user = await User.findOne({
+                where:{
+                    email 
+                }
+            });
+
+            if(! user) return badRequestMessage("Invalid email", res);
+            
+            let token = crypto.randomBytes(32).toString('hex');
+            
+            let url = `${req.protocol}://${req.get('host')}/reset-password`;
+            await resetPasswordEmail(user, url);
+
+
+            return res.status(200).json({
+                status: 'success',
+                code: 200,
+                message: 'Reset password link is sent to your email.'
+            });
+        }
+        
+    }catch(error){ 
+        console.log('Error in auth.controller.js: ',error);
+        serverErrorMessage(error, res);
+    }
 };
 
 module.exports = {

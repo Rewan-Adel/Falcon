@@ -4,9 +4,10 @@ const {
     register,
     verifyCode,
     completeProfile,
-    createUsername,resendCode,
-
-    login, loginPass
+    createUsername,
+    resendCode,
+    login,
+    loginPass
 } = require('../controllers/auth.controller');
 
 router.post('/register/:way', register);
