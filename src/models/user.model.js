@@ -115,12 +115,12 @@ User.prototype.toJSON = function(){
     return user;
 }
 
-User.beforeSave(async(user) => {
-    if(user.changed('password')){
-        user.password = await bcrypt.hashSync(user.password, 10);
-        user.confirmPassword = undefined;    
-        console.log(user.password)
-    };
-});
+// User.beforeSave(async(user) => {
+//     if(user.changed('password')){
+//         user.password = await bcrypt.hashSync(user.password, 10);
+//         user.confirmPassword = undefined;    
+//         console.log(user.password)
+//     };
+// });
 
 module.exports = User;
