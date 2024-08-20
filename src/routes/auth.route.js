@@ -1,27 +1,25 @@
 const router = require('express').Router();
 const {protect} = require('../utils/auth.token');
 const {
-    register,
+    emailRegisterAPI,
     verifyCode,
     completeProfile,
-    createUsername,
     resendCode,
-    login,
+    loginByEmail,
     loginPass,
     getGoogleAuthURL,
     googleRegisterAPI,
     logout, resetPassword,  forgotPassword
 } = require('../controllers/auth.controller');
 
-router.post('/register/:way', register);
+router.post('/register/email', emailRegisterAPI);
 
 router.get('/google', (req, res) => {
     res.redirect(getGoogleAuthURL());
 });
 router.get('/google/callback', googleRegisterAPI );
 
-router.post('/login/:way', login);
-router.post('/login/google', login);
+router.post('/login/email', loginByEmail);
 router.post('/login/enter/password', loginPass);
 
 router.post('/forgot-password', forgotPassword);
