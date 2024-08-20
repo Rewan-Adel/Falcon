@@ -76,10 +76,7 @@ const User = db.define('User',{
     },
     avatarURL:{
         type: DataTypes.JSON,
-        defaultValue:{ 
-            url:'https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png',
-            public_id: 'avatar'
-        },
+        defaultValue:'https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png'
     },
     country:{
         type: DataTypes.STRING,
@@ -99,17 +96,18 @@ const User = db.define('User',{
     signupWay        :{type: DataTypes.STRING, enum: ['email', 'phone', 'apple', 'twitter']},
     auctionBid       :{type: DataTypes.DECIMAL},
     isVerified       :{type: DataTypes.BOOLEAN, defaultValue: false },
+  
+    googleToken      :{type: DataTypes.STRING},
     otp              :{type: DataTypes.STRING},
     otpCount         :{type: DataTypes.INTEGER, defaultValue: 0},
     otpExpires       :{type: DataTypes.DATE},
-  
     passChangedAt    :{type: DataTypes.DATE} ,
     passResetToken   :{type: DataTypes.STRING},
     passResetExpires :{type: DataTypes.DATE},
 },{
     timestamps: false
 });
-const EXCLUDED_FIELDS = ['password', 'confirmPassword', 'passChangedAt', 'passResetToken', 'passResetExpires', 'otp', 'otpCount', 'otpExpires'];
+const EXCLUDED_FIELDS = ['password', 'confirmPassword', 'passChangedAt', 'passResetToken', 'passResetExpires', 'otp', 'otpCount', 'otpExpires', "googleToken"];
 
 User.prototype.toJSON = function(){
     let user = this.dataValues;

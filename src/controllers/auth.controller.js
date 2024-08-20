@@ -1,9 +1,10 @@
-const User = require('../models/user.model');
+const axios = require('axios');
 const bcrypt = require('bcrypt');
-const { google } = require('googleapis');
+const User = require('../models/user.model');
+const  oauth2Client  = require('../config/oauth2Client');
+const crypto = require('crypto');
 
 const {sendVerifyEmail, resetPasswordEmail} = require('../utils/sendCodeToEmail');
-
 const {emailValidation, completeValidation, usernameValidation} = require('../validation/signup.validation');
 const {generateToken} = require('../utils/auth.token');
 const {
@@ -15,64 +16,91 @@ const {
 const register = async(req, res, next)=>{
     try{
         let registerWay = req.params.way;
+        let user;
 
-        switch(registerWay){
-            case 'email'  : emailRegister(req, res);   break;
-            case 'google' : googleRegister(req, res);  break;
-            case 'phone'  : phoneRegister(req, res);   break;
-            case 'apple'  : appleRegister(req, res);   break;
-            case 'twitter': twitterRegister(req, res); break;
+        switch(registerWay) {
+            case 'email': 
+                user = await emailRegister(req, res); 
+                break;
+            case 'google': 
+                return res.redirect(getGoogleAuthURL());                
+            case 'phone': 
+                user = await phoneRegister(req, res); 
+                break;
+            case 'apple': 
+                user = await appleRegister(req, res); 
+                break;
+            case 'twitter': 
+                user = await twitterRegister(req, res); 
+                break;
             default:
                 return badRequestMessage('Invalid register way.', res);
         };
+
+        if (!user) return badRequestMessage('Registration failed.', res);
+        if (typeof user === 'string') {
+            if(user =="Couldn't send verification email") return serverErrorMessage(user, res);
+        };
+        let token = await generateToken(user.userID, res);
+        return res.status(201).json({
+            status: 'success',
+            code: 201,
+            message: 'Verification code is sent.',
+            token: token
+        });
     
     }catch(error){
         console.log('Error in auth.controller.js, register function: ',error);
         serverErrorMessage(error, res);
     }
 };
-async function emailRegister(req, res){
-    let { error, value } = emailValidation(req.body);
-    if(error) return badRequestMessage(error.message, res);
-
-
-    let user = await User.findOne({where: {email: value.email}});
-    if( user ) return badRequestMessage('Email already exists', res);
-
-    user = await User.create(value);
-    user.signupWay = 'email';
-    await user.save();
-    await sendVerifyEmail(user);
-
-    let token = await generateToken(user.userID, res);
-    res.cookie('jwt', token, {
-        httpOnly: true,
-        sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        maxAge: 7 * 24 * 60 * 60 * 1000
+function getGoogleAuthURL(res) {
+    const scope = [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ];
+    let url = oauth2Client.generateAuthUrl({
+      access_type: 'offline', 
+      scope,
     });
-    return res.status(201).json({
-        status: 'success',
-        code: 201,
-        message: 'Verification code is sent.',
-        token: token
-    });
+
+    return url;
 }
-async function googleRegister(req, res){
-    let { error, value } = emailValidation(req.body);
-    if(error) return badRequestMessage(error.message, res);
+const googleRegisterAPI = async(req, res, next)=>{
+    try{
+        const userInfo = await getGoogleUser(req);
 
-    let user = await User.findOne({where: {email: value.email}});
-    if( user ) return res.redirect('/login/google');
+        let user = await User.findOne({where: {email: userInfo.email}});
+        if( user ) {
+            let token = await generateToken(user.userID, res);
+            return res.status(200).json({
+                status: 'success',
+                code: 200,
+                message: 'User logged in successfully.',
+                token: token,
+                user: user.toJSON()
+            });
+        }
     
+        user = await User.create({email: userInfo.email, googleToken: userInfo.googleToken, signupWay: "google", isVerified:true});    
 
-    user = await User.create(value);
-    user.signupWay = 'google';
-}
-async function phoneRegister(req, res){}
-async function appleRegister(req, res){}
-async function twitterRegister(req, res){}
+        await user.save();
 
+        let token = await generateToken(user.userID, res);
+
+        return res.status(201).json({
+            status: 'success',
+            code: 201,
+            message: 'User created successfully.',
+            token: token,
+            user: user.toJSON()
+
+        });
+    }catch(error){
+        console.log('Error in googleRegisterAPI function: ',error);
+        serverErrorMessage(error, res);
+    }
+};
 
 const verifyCode = async(req, res, next)=>{
     try{
@@ -80,7 +108,7 @@ const verifyCode = async(req, res, next)=>{
         let {user} = req;
 
         if(!otp) return badRequestMessage('Verification code is required.', res);
-        
+
         otp = otp.toString();
         const isMatch = await bcrypt.compare(otp, user.otp);
         if(!isMatch) return badRequestMessage('Invalid verification code', res);
@@ -100,7 +128,6 @@ const verifyCode = async(req, res, next)=>{
         next(serverErrorMessage(error, res));
     }
 };
-
 const resendCode = async(req, res, next)=>{
     try{
         let {user} = req;
@@ -133,9 +160,17 @@ const resendCode = async(req, res, next)=>{
 const completeProfile = async(req, res, next)=>{
     try{
         let {user} = req;
+        if(!user.isVerified) return badRequestMessage('Please, Verify your account.', res);
+
         let {error, value} = completeValidation(req.body);
         if(error) return  badRequestMessage(error.message, res);
         
+        let checkUsername = await User.findOne({
+            where: {
+                username: user.username
+            }
+        });
+        if(checkUsername) return badRequestMessage("username already exists", res);
         value.password = await bcrypt.hash(value.password, 10);
         await user.update(value);
         
@@ -152,7 +187,6 @@ const completeProfile = async(req, res, next)=>{
         next(serverErrorMessage(error, res));
     }
 };
-
 const createUsername = async(req, res, next)=>{
     try{
         let {error, value} = usernameValidation(req.body);
@@ -205,12 +239,16 @@ const login = async(req, res, next)=>{
             token
         });
     }
+
+    if(loginWay == 'google'){
+        return res.redirect(getGoogleAuthURL());
+    }
+
 }catch(error){
     console.log('Error in auth.controller.js: ',error);
     serverErrorMessage(error, res);
 }
 };
-
 const loginPass = async(req, res, next)=>{
     try{
         let {password} = req.body;
@@ -232,36 +270,137 @@ const loginPass = async(req, res, next)=>{
     serverErrorMessage(error, res);
 }
 };
+const logout = async(req, res, next)=>{
+    try{
+        let {user} = req;
+        console.log("Logout: ", user.googleToken)
+        if(user.googleToken ){
+            await oauth2Client.revokeToken(user.googleToken);
+            user.googleToken = null;
+            await user.save();
+        }
+        res.clearCookie('jwt');
+        return res.status(200).json({
+            status: 'success',
+            code: 200,
+            message: 'Logout successfully.'
+        });
+    }catch(error){
+        console.log('Error in auth.controller.js: ',error);
+        serverErrorMessage(error, res);
+    }
+};
 
-const resetPassword = async(req, res, next)=>{
+const  forgotPassword = async(req, res, next)=>{  
     try{
         let {way} = req.params;
-        if(way == 'email'){
+        //if(way == 'email'){
             let {email} =  req.body;
             let user = await User.findOne({
                 where:{
                     email 
                 }
             });
-
             if(! user) return badRequestMessage("Invalid email", res);
             
             let token = crypto.randomBytes(32).toString('hex');
+            let url = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${token}`;
             
-            let url = `${req.protocol}://${req.get('host')}/reset-password`;
+            user.passResetToken = token;
+            user.passResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+            await user.save();
+            
             await resetPasswordEmail(user, url);
-
 
             return res.status(200).json({
                 status: 'success',
                 code: 200,
                 message: 'Reset password link is sent to your email.'
             });
+       // }
+        }catch(error){
+            console.log('Error in auth.controller.js: ',error);
+            serverErrorMessage(error, res);
         }
+};
+
+
+  const resetPassword = async(req, res, next)=>{
+    try{
+        const { token } = req.params;
+        const { newPassword } = req.body;
         
+        if(!newPassword) return badRequestMessage('New password is required.', res);
+        const user = await User.findOne({
+            where: {
+                passResetToken: token,
+                //passResetExpires: { $lte: Date.now() } 
+            }
+        });
+        if (!user) return badRequestMessage("Invalid or expired token", res);
+     
+        let hashedPass = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPass; 
+        user.passResetToken = null;
+        user.passResetExpires = null;
+        user.passChangedAt = Date.now();
+        await user.save();
+
+        return res.status(200).json({
+            status: 'success',
+            code: 200,
+            message: 'Password has been reset successfully.'
+        });
     }catch(error){ 
         console.log('Error in auth.controller.js: ',error);
         serverErrorMessage(error, res);
+    }
+};
+
+async function emailRegister(req, res){
+    let { error, value } = emailValidation(req.body);
+    if(error) return error.message;
+
+    try{
+        let user = await User.findOne({where: {email: value.email}});
+        if( user ) return 'Email already exists';
+
+        user = await User.create(value);
+        user.signupWay = 'email';
+        await user.save();
+        let sendMil = await sendVerifyEmail(user);
+    
+        if(!sendMil) {
+            await user.destroy();
+            return "Couldn't send verification email";
+        }
+        return user;
+    }catch(error){
+        console.log('Error in emailRegister function: ',error);
+        throw new Error(error.message);
+    }
+};
+async function getGoogleUser(req) {
+    try {
+        const { code } = req.query;
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials({ refresh_token: tokens.refresh_token });
+
+        const response = await axios.get(
+                `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokens.access_token}`,
+                    },
+                }
+        );
+
+        const { email, name } = response.data;
+        let googleToken = tokens.access_token;
+
+        return { email, name , googleToken};
+    }catch (error) {
+        throw new Error(`Failed to fetch Google user: ${error.message}`);
     }
 };
 
@@ -271,5 +410,9 @@ module.exports = {
     completeProfile,
     createUsername,
     resendCode,
-    login, loginPass
+    login, loginPass,
+    resetPassword,forgotPassword,
+    getGoogleAuthURL,
+    googleRegisterAPI,
+    logout
 };

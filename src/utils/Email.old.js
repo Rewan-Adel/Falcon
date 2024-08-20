@@ -1,30 +1,19 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD
-    }
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 class Email {
     constructor(to){
-        this.from    = process.env.EMAIL;
+        this.from    = process.env.EMAIL_FROM;
         this.to      = to;
         this.subject = 'Falconion'
     };
 
-    async send(msg) {
-        try {
-            let info = await transporter.sendMail(msg);
-            console.log('Email sent: ', info.response);
-            return info;
-        } catch (error) {
+    async send(msg){
+        try{
+            await sgMail.send(msg);
+        }catch(error){
             console.log('Error in Email.js: ', error);
-            throw error;
         }
     }
 
@@ -36,16 +25,14 @@ class Email {
         <p style="color: #333; font-size: 24px; font-weight: bold;">${otp}</p>
         <p style="color: #666;">valid for only  5  minutes.</p>`
 
-        let send = await this.send({
-            from   : process.env.EMAIL,
+        return await this.send({
+            from   : this.from,
             to     : this.to,
             subject: this.subject,
             text   : 'Verify your email',
             html   :  htmlContent
         });
-
-        return send;
-    }
+    };
 
     async resetPassword(url){
         const htmlContent =  `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
@@ -64,6 +51,6 @@ class Email {
             html   : htmlContent
         });
     }
-}
+};
 
 module.exports = Email;

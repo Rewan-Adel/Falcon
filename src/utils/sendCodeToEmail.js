@@ -4,11 +4,11 @@ const bcrypt = require('bcrypt');
 exports.sendVerifyEmail = async(user)=>{
     try{
         let otp = generateCode();
-        await verifyMail(user.email, otp);
+        await sendMail(user.email, otp);
 
         let hashedOtp = await bcrypt.hashSync(otp, 10);
         await updateUserOtp(user, hashedOtp);
-
+        return true;
     }catch(error){
         console.error(error);
     }
@@ -26,21 +26,22 @@ exports.resetPasswordEmail = async(user, url)=>{
         console.error(error);
     }
 };
+const sendResetPassMail = async(email, url)=>{
+    let sendMail = new Email(email);
+    await sendMail.resetPassword(url);
+}
 
 const generateCode = () => {   
     const otp = Math.floor( Math.random() * 900000);
     return otp.toString();
 }
 
-const verifyMail = async(email, otp)=>{
+const sendMail = async(email, otp)=>{
     let sendMail = new Email(email);
+    console.log('sendMail: ', sendMail);
     await sendMail.verificationEmail(otp);
 };
 
-const sendResetPassMail = async(email, otp)=>{
-    let sendMail = new Email(email);
-    await sendMail.resetPassword(url);
-}
 
 const updateUserOtp = async(user, hashedOtp)=>{
     await user.update({

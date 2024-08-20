@@ -29,7 +29,7 @@ const protect = async(req, res, nxt)=>{
     }
     catch(error){
         console.log('Error at token.middleware file: ', error);
-        serverErrorMessage(error, res);
+       // serverErrorMessage(error, res);
     }
 };
 
@@ -47,7 +47,6 @@ const generateToken = async(userID, res)=>{
     }
     catch(error){
         console.log('Error at token.middleware file: ', error);
-        serverErrorMessage(error);
     }
 };
 

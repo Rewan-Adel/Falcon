@@ -8,12 +8,6 @@ const schemas = {
     phone: Joi.object({
         phone     : Joi.string().max(14).required().trim(),
     }).unknown(),
-    
-    username: Joi.object({
-        username  : Joi.string().min(5).max(25).required().trim().alphanum().messages({
-            "string.empty": "username is required."
-        }),
-    }).unknown(),
 
     completeData: Joi.object({
         firstName : Joi.string().max(25).required().trim().messages({
@@ -26,7 +20,10 @@ const schemas = {
             "string.empty": "Password is required."
         }),
         confirmPassword: Joi.string().min(6).required().trim().valid(Joi.ref('password')).messages({ "string.empty": "Confirm password is required.", 'any.only': 'Passwords do not match'}),
-    }).unknown()
+        username  : Joi.string().min(5).max(25).required().trim().alphanum().messages({
+            "string.empty": "username is required."
+        }),
+    }).unknown(),
 }
 
 // Function to validate email
