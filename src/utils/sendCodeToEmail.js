@@ -19,7 +19,7 @@ exports.resetPasswordEmail = async(user, url)=>{
         let otp = generateCode();
         await sendResetPassMail(user.email, url);
 
-        let hashedOtp = await hashOtp(otp);
+        let hashedOtp = await bcrypt.hashSync(otp, 10);
         await updateUserPass(user, hashedOtp);
 
     }catch(error){
@@ -38,7 +38,6 @@ const generateCode = () => {
 
 const sendMail = async(email, otp)=>{
     let sendMail = new Email(email);
-    console.log('sendMail: ', sendMail);
     await sendMail.verificationEmail(otp);
 };
 
