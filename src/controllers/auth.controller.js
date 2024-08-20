@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 const  oauth2Client  = require('../config/oauth2Client');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 const {sendVerifyEmail, resetPasswordEmail} = require('../utils/sendCodeToEmail');
 const {emailValidation, completeValidation, usernameValidation} = require('../validation/signup.validation');
@@ -12,36 +13,37 @@ const {
     badRequestMessage
 } = require('../middlewares/error.messages.middleware');
 
-
-const register = async(req, res, next)=>{
+const emailRegisterAPI = async(req, res, next)=>{
     try{
-        let registerWay = req.params.way;
-        let user;
+       // let registerWay = req.params.way;
+        let  user = await emailRegister(req, res); 
 
-        switch(registerWay) {
-            case 'email': 
-                user = await emailRegister(req, res); 
-                break;
-            case 'google': 
-                return res.redirect(getGoogleAuthURL());                
-            case 'phone': 
-                user = await phoneRegister(req, res); 
-                break;
-            case 'apple': 
-                user = await appleRegister(req, res); 
-                break;
-            case 'twitter': 
-                user = await twitterRegister(req, res); 
-                break;
-            default:
-                return badRequestMessage('Invalid register way.', res);
-        };
+
+        // switch(registerWay) {
+        //     case 'email': 
+        //     user = await emailRegister(req, res); 
+        //     break;
+        //     case 'google': 
+        //         return res.redirect(getGoogleAuthURL());                
+        //     case 'phone': 
+        //         user = await phoneRegister(req, res); 
+        //         break;
+        //     case 'apple': 
+        //         user = await appleRegister(req, res); 
+        //         break;
+        //     case 'twitter': 
+        //         user = await twitterRegister(req, res); 
+        //         break;
+        //     default:
+        //         return badRequestMessage('Invalid register way.', res);
+        // };
 
         if (!user) return badRequestMessage('Registration failed.', res);
         if (typeof user === 'string') {
             if(user =="Couldn't send verification email") return serverErrorMessage(user, res);
         };
         let token = await generateToken(user.userID, res);
+
         return res.status(201).json({
             status: 'success',
             code: 201,
@@ -54,7 +56,7 @@ const register = async(req, res, next)=>{
         serverErrorMessage(error, res);
     }
 };
-function getGoogleAuthURL(res) {
+const getGoogleAuthURL = (res) =>{
     const scope = [
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -71,6 +73,7 @@ const googleRegisterAPI = async(req, res, next)=>{
         const userInfo = await getGoogleUser(req);
 
         let user = await User.findOne({where: {email: userInfo.email}});
+        // if user exists, login
         if( user ) {
             let token = await generateToken(user.userID, res);
             return res.status(200).json({
@@ -81,13 +84,11 @@ const googleRegisterAPI = async(req, res, next)=>{
                 user: user.toJSON()
             });
         }
-    
+        // if user doesn't exist, register
         user = await User.create({email: userInfo.email, googleToken: userInfo.googleToken, signupWay: "google", isVerified:true});    
-
         await user.save();
 
         let token = await generateToken(user.userID, res);
-
         return res.status(201).json({
             status: 'success',
             code: 201,
@@ -167,9 +168,10 @@ const completeProfile = async(req, res, next)=>{
         
         let checkUsername = await User.findOne({
             where: {
-                username: user.username
+                username: value.username
             }
         });
+        console.log('checkUsername: ', checkUsername);
         if(checkUsername) return badRequestMessage("username already exists", res);
         value.password = await bcrypt.hash(value.password, 10);
         await user.update(value);
@@ -214,16 +216,14 @@ const createUsername = async(req, res, next)=>{
     }
 };
 
-const login = async(req, res, next)=>{
+const loginByEmail = async(req, res, next)=>{
     try{
-        let loginWay = req.params.way;
-        if(loginWay == 'email'){
         let { error, value } = emailValidation(req.body);
         if(error) return badRequestMessage(error.message, res);
 
         let user = await User.findOne({where: {email: value.email}});
         if( !user ) return badRequestMessage('Invalid email.', res);
-        await sendVerifyEmail(user);
+        //await sendVerifyEmail(user);
         
         let token = await generateToken(user.userID, res);
         res.cookie('jwt', token, {
@@ -232,18 +232,12 @@ const login = async(req, res, next)=>{
             secure: process.env.NODE_ENV === 'production' ? true : false,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
+        req.user = user;
         return res.status(200).json({
             status: 'success',
             code: 200,
-            message: 'Verification code is sent.',
             token
         });
-    }
-
-    if(loginWay == 'google'){
-        return res.redirect(getGoogleAuthURL());
-    }
-
 }catch(error){
     console.log('Error in auth.controller.js: ',error);
     serverErrorMessage(error, res);
@@ -252,17 +246,21 @@ const login = async(req, res, next)=>{
 const loginPass = async(req, res, next)=>{
     try{
         let {password} = req.body;
-        let {user} = req;
-        
         if(!password) return badRequestMessage('Password is required.', res);
+        
+        let token = req.cookies.jwt || req.header('Authorization').replace('Bearer ', '');
+        let decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findByPk(decoded.userID);
+        
+        if(!user) return badRequestMessage("Invalid token", res);
+        let checkPass = await bcrypt.compare(password, user.password);  
 
-        let checkPass = await bcrypt.compare(password, user.password);
         if(!checkPass) return badRequestMessage("Invalid Password", res);
 
         return res.status(200).json({
             status: 'success',
             code: 200,
-            message: 'Login successfully.',
+            message: 'Login successful.',
         });
     
 }catch(error){
@@ -273,7 +271,6 @@ const loginPass = async(req, res, next)=>{
 const logout = async(req, res, next)=>{
     try{
         let {user} = req;
-        console.log("Logout: ", user.googleToken)
         if(user.googleToken ){
             await oauth2Client.revokeToken(user.googleToken);
             user.googleToken = null;
@@ -293,39 +290,40 @@ const logout = async(req, res, next)=>{
 
 const  forgotPassword = async(req, res, next)=>{  
     try{
-        let {way} = req.params;
-        //if(way == 'email'){
-            let {email} =  req.body;
-            let user = await User.findOne({
-                where:{
-                    email 
-                }
+        let {email} =  req.body;
+        let user = await User.findOne({
+            where:{
+                email 
+            }
             });
-            if(! user) return badRequestMessage("Invalid email", res);
-            
-            let token = crypto.randomBytes(32).toString('hex');
-            let url = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${token}`;
-            
-            user.passResetToken = token;
-            user.passResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        if(! user) return badRequestMessage("Invalid email", res);
+    
+        let token = crypto.randomBytes(32).toString('hex');
+        let url = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${token}`;
+        
+        user.passResetToken = token;
+        user.passResetExpires = Date.now() + 3 * 60 * 1000; // 10 minutes
+
+        setTimeout( async()=>{
+            user.passResetToken = null;
+            user.passResetExpires = null; // 10 minutes
             await user.save();
-            
-            await resetPasswordEmail(user, url);
+       }, 3 * 60 * 1000);
+        
+        
+        await resetPasswordEmail(user, url);
 
-            return res.status(200).json({
-                status: 'success',
-                code: 200,
-                message: 'Reset password link is sent to your email.'
-            });
-       // }
-        }catch(error){
-            console.log('Error in auth.controller.js: ',error);
-            serverErrorMessage(error, res);
-        }
+        return res.status(200).json({
+            status: 'success',
+            code: 200,
+            message: 'Reset password link is sent to your email.'
+        })
+    }catch(error){
+        console.log('Error in auth.controller.js: ',error);
+        serverErrorMessage(error, res);
+    }
 };
-
-
-  const resetPassword = async(req, res, next)=>{
+const resetPassword = async(req, res, next)=>{
     try{
         const { token } = req.params;
         const { newPassword } = req.body;
@@ -334,11 +332,13 @@ const  forgotPassword = async(req, res, next)=>{
         const user = await User.findOne({
             where: {
                 passResetToken: token,
-                //passResetExpires: { $lte: Date.now() } 
             }
         });
-        if (!user) return badRequestMessage("Invalid or expired token", res);
-     
+        if (!user) return badRequestMessage("Invalid token", res);
+        
+        const expiresDate = new Date(user.passResetExpires).getTime();
+        if(expiresDate > Date.now()) return badRequestMessage('Token has expired.', res);
+
         let hashedPass = await bcrypt.hash(newPassword, 10);
         user.password = hashedPass; 
         user.passResetToken = null;
@@ -405,14 +405,16 @@ async function getGoogleUser(req) {
 };
 
 module.exports = {
-    register,
+    emailRegisterAPI,
+    getGoogleAuthURL,
+    googleRegisterAPI,
     verifyCode,
     completeProfile,
     createUsername,
     resendCode,
-    login, loginPass,
-    resetPassword,forgotPassword,
-    getGoogleAuthURL,
-    googleRegisterAPI,
+    loginByEmail,
+    loginPass,
+    resetPassword,
+    forgotPassword,
     logout
 };
