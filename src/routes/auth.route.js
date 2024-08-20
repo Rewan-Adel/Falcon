@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const {protect} = require('../utils/auth.token');
+const {protect} = require('../middlewares/auth.token');
 const {
     emailRegisterAPI,
     verifyCode,

@@ -13,7 +13,6 @@ const schemas = {
         firstName : Joi.string().max(25).required().trim().messages({
             "string.empty": "First name is required.",
             "string.max": "Last name should not be more than 3 characters."
-
         }),
         lastName  : Joi.string().max(25).required().trim().messages({
             "string.empty": "Last name is required.",

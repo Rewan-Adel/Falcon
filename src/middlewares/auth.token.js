@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
-const { serverErrorMessage,unAuthorizedMessage, notFoundMessage } = require('../middlewares/error.messages.middleware');
+const { serverErrorMessage,unAuthorizedMessage, notFoundMessage } = require('./error.messages.middleware');
 
 const protect = async(req, res, nxt)=>{
     try{

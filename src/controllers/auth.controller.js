@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const {sendVerifyEmail, resetPasswordEmail} = require('../utils/sendCodeToEmail');
 const {emailValidation, completeValidation, usernameValidation} = require('../validation/signup.validation');
-const {generateToken} = require('../utils/auth.token');
+const {generateToken} = require('../middlewares/auth.token');
 const {
     serverErrorMessage,
     badRequestMessage
@@ -75,6 +75,7 @@ const googleRegisterAPI = async(req, res, next)=>{
         let user = await User.findOne({where: {email: userInfo.email}});
         // if user exists, login
         if( user ) {
+            if(user.registerWay  != "google") return badRequestMessage("email already exist", res);
             let token = await generateToken(user.userID, res);
             return res.status(200).json({
                 status: 'success',
@@ -85,7 +86,7 @@ const googleRegisterAPI = async(req, res, next)=>{
             });
         }
         // if user doesn't exist, register
-        user = await User.create({email: userInfo.email, googleToken: userInfo.googleToken, signupWay: "google", isVerified:true});    
+        user = await User.create({email: userInfo.email,username: userInfo.name, googleToken: userInfo.googleToken, signupWay: "google", isVerified:true});    
         await user.save();
 
         let token = await generateToken(user.userID, res);
@@ -171,7 +172,7 @@ const completeProfile = async(req, res, next)=>{
                 username: value.username
             }
         });
-        console.log('checkUsername: ', checkUsername);
+
         if(checkUsername) return badRequestMessage("username already exists", res);
         value.password = await bcrypt.hash(value.password, 10);
         await user.update(value);
