@@ -1,0 +1,388 @@
+{
+	"info": {
+		"_postman_id": "12462bf4-5491-405c-ac7b-5d2e0c8a687b",
+		"name": "Falconion",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25350743"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Google Auth",
+					"item": [
+						{
+							"name": "Get google URL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/api/auth/google",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"api",
+										"auth",
+										"google"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register by google acc",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/api/auth/google/callback",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"api",
+										"auth",
+										"google",
+										"callback"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "This APIs are used with signup and login functionalities."
+				},
+				{
+					"name": "Signup",
+					"item": [
+						{
+							"name": "Signup with email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/register/email",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register",
+										"email"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify code",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"otp\": 111111\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/verify/code",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify",
+										"code"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Complete profile",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\"      : \"\",\r\n     \"lastName\"      : \"\",\r\n    \"password\"       : \"\",\r\n    \"confirmPassword\": \"\",\r\n    \"username\"       : \"\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/register/complete/profile",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register",
+										"complete",
+										"profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Resend Code",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/auth/verify/resend",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify",
+										"resend"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "registeration by several methods :\n\n- Email\n    \n- Phone number\n    \n- Apple\n    \n- Twitter"
+				},
+				{
+					"name": "Login",
+					"item": [
+						{
+							"name": "login by email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/login/email",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login",
+										"email"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify code",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"otp\": 000000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/verify/code",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify",
+										"code"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Enter Password",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/login/enter/password",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login",
+										"enter",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Resend Code",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/auth/verify/resend",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify",
+										"resend"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Reset password",
+					"item": [
+						{
+							"name": "Forgot Pass",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/auth/forgot-password",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"forgot-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reset Pass",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"newPassword\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/api/auth/reset-password/:token",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"api",
+										"auth",
+										"reset-password",
+										":token"
+									],
+									"variable": [
+										{
+											"key": "token",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/auth/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "logout by clear the cookie and google token if registred by google."
+					},
+					"response": []
+				}
+			],
+			"description": "The Authentication API provides endpoints for user registration, login, password and management It incorporates secure practices such as email verification and password reset functionality. Key features include:\n\n- **User Registration:** Allows users to sign up with a unique username and email or google .\n    \n- **Email Verification:** Verifies user identity through email confirmation be sending verification code into the email, ensuring a secure registration process.\n    \n- **Login:** Enables users to log in securely using their email and password or google.\n    \n- **Password Management:** Includes features for password reset, ensuring users can regain access to their accounts in case of a forgotten password.\n    \n\nThis API is designed to provide a robust and secure authentication system for user interactions with the application."
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://localhost:8000"
+		}
+	]
+}
