@@ -224,6 +224,9 @@ const loginByEmail = async(req, res, next)=>{
 
         let user = await User.findOne({where: {email: value.email}});
         if( !user ) return badRequestMessage('Invalid email.', res);
+        
+        if(user.signupWay  != "email") return badRequestMessage("Invalid.", res);
+
         //await sendVerifyEmail(user);
         
         let token = await generateToken(user.userID, res);
@@ -292,6 +295,7 @@ const logout = async(req, res, next)=>{
 const  forgotPassword = async(req, res, next)=>{  
     try{
         let {email} =  req.body;
+        if(!email) return badRequestMessage('Email is required.', res);
         let user = await User.findOne({
             where:{
                 email 
@@ -335,10 +339,10 @@ const resetPassword = async(req, res, next)=>{
                 passResetToken: token,
             }
         });
-        if (!user) return badRequestMessage("Invalid token", res);
+        if (!user) return badRequestMessage("Invalid token or expired.", res);
         
-        const expiresDate = new Date(user.passResetExpires).getTime();
-        if(expiresDate > Date.now()) return badRequestMessage('Token has expired.', res);
+        
+        //if(user.passResetExpires > Date.now()) return badRequestMessage('Token has expired.', res);
 
         let hashedPass = await bcrypt.hash(newPassword, 10);
         user.password = hashedPass; 
