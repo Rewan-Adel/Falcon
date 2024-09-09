@@ -12,14 +12,16 @@ const schemas = {
     completeData: Joi.object({
         firstName : Joi.string().max(25).required().trim().messages({
             "string.empty": "First name is required.",
-            "string.max": "Last name should not be more than 3 characters."
+            "string.max": "First name should not be more than 25 characters."
         }),
         lastName  : Joi.string().max(25).required().trim().messages({
             "string.empty": "Last name is required.",
-            "string.max": "Last name should not be more than 3 characters."
+            "string.max": "Last name should not be more than 25 characters."
         }),
         password  : Joi.string().min(6).required().trim().messages({
-            "string.empty": "Password is required."
+            "string.empty": "Password is required.",
+            "string.min": "password should not be less than 6 characters."
+
         }),
         confirmPassword: Joi.string().min(6).required().trim().valid(Joi.ref('password')).messages({ "string.empty": "Confirm password is required.", 'any.only': 'Passwords do not match'}),
         username  : Joi.string().min(5).max(25).required().trim().alphanum().messages({
