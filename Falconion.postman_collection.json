@@ -327,12 +327,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8000/api/auth/reset-password/:token",
-									"protocol": "http",
+									"raw": "{{URL}}/api/auth/reset-password/:token",
 									"host": [
-										"localhost"
+										"{{URL}}"
 									],
-									"port": "8000",
 									"path": [
 										"api",
 										"auth",
@@ -373,6 +371,224 @@
 				}
 			],
 			"description": "The Authentication API provides endpoints for user registration, login, password and management It incorporates secure practices such as email verification and password reset functionality. Key features include:\n\n- **User Registration:** Allows users to sign up with a unique username and email or google .\n    \n- **Email Verification:** Verifies user identity through email confirmation be sending verification code into the email, ensuring a secure registration process.\n    \n- **Login:** Enables users to log in securely using their email and password or google.\n    \n- **Password Management:** Includes features for password reset, ensuring users can regain access to their accounts in case of a forgotten password.\n    \n\nThis API is designed to provide a robust and secure authentication system for user interactions with the application."
+		},
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/user/get/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"get",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // \"firstName\"      : \"\",\r\n    // \"lastName\"       : \"\",\r\n    // \"username\"       : \"\",\r\n    // \"description\"    : \"\",\r\n    // \"country\"        : \"\",\r\n    // \"state\"          : \"\",\r\n    // \"city\"           : \"\",\r\n   // \"gender\"         : \"female\"\r\n    // \"birthday\"       : \"0000-00-00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/user/update/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"update",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldPassword\"    : \"\",\r\n    \"newPassword\"    : \"\",\r\n    \"confirmPassword\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/user/change/password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"change",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Image",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "img",
+									"type": "file",
+									"src": "pexels-neo-2653362.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/user/update/profile/picture",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"update",
+								"profile",
+								"picture"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete image",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/user/delete/profile/picture",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"delete",
+								"profile",
+								"picture"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Email",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/user/change/email",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"change",
+								"email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify code Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"otp\": 123456\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/user/verify/code",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"verify",
+								"code"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Code Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/auth/verify/resend",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verify",
+								"resend"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The User API provides endpoints for :\n\n- **User Profile:** get all user info**.**\n    \n- **Update User:** Enables user to update his/her info.\n    \n- **Delete Account:** Allows user to sign out and delete his/her account from the system.\n    \n\nThis API is designed to provide all crud operations to one user."
+		},
+		{
+			"name": "New Folder",
+			"item": []
 		}
 	],
 	"variable": [
