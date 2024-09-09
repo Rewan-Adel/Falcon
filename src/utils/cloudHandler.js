@@ -1,4 +1,4 @@
-const cloudinary = require('../config/cloudinay');
+const cloudinary = require('../config/cloudinary');
 const {serverErrorMessage} = require('../middlewares/error.messages.middleware');
 
 const uploadImgToCloud = async function(filePath){
