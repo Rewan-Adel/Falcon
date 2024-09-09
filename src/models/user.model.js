@@ -76,7 +76,11 @@ const User = db.define('User',{
     },
     avatarURL:{
         type: DataTypes.JSON,
-        defaultValue:'https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png'
+        defaultValue:'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg'
+    },
+    avatarPublicId: {
+        type: DataTypes.JSON,
+        defaultValue:'default_j5ftby_jspjve'
     },
     country:{
         type: DataTypes.STRING,
@@ -93,10 +97,14 @@ const User = db.define('User',{
     description:{
         type: DataTypes.TEXT
     },
-    signupWay        :{type: DataTypes.STRING, enum: ['email', 'phone', 'apple', 'twitter']},
+    gender: {
+        type: DataTypes.ENUM('female', 'male'),
+    },
     auctionBid       :{type: DataTypes.DECIMAL},
+    
+
     isVerified       :{type: DataTypes.BOOLEAN, defaultValue: false },
-  
+    signupWay        :{type: DataTypes.STRING, enum: ['email', 'phone', 'apple', 'twitter']},
     googleToken      :{type: DataTypes.STRING},
     otp              :{type: DataTypes.STRING},
     otpCount         :{type: DataTypes.INTEGER, defaultValue: 0},
@@ -107,7 +115,18 @@ const User = db.define('User',{
 },{
     timestamps: false
 });
-const EXCLUDED_FIELDS = ['password', 'confirmPassword', 'passChangedAt', 'passResetToken', 'passResetExpires', 'otp', 'otpCount', 'otpExpires', "googleToken"];
+const EXCLUDED_FIELDS = [
+    'avatarPublicId',
+    'password',
+    'confirmPassword',
+    'passChangedAt',
+    'passResetToken',
+    'passResetExpires',
+    'otp',
+    'otpCount',
+    'otpExpires',
+    "googleToken"
+];
 
 User.prototype.toJSON = function(){
     let user = this.dataValues;
