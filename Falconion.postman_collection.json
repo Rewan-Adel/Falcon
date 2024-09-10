@@ -535,13 +535,13 @@
 					"response": []
 				},
 				{
-					"name": "verify code Copy",
+					"name": "verify code",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"otp\": 123456\r\n}",
+							"raw": "{\r\n    \"otp\": 123456,\r\n    \"userID\": 1,\r\n    \"newEmail\": \"\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -587,8 +587,150 @@
 			"description": "The User API provides endpoints for :\n\n- **User Profile:** get all user info**.**\n    \n- **Update User:** Enables user to update his/her info.\n    \n- **Delete Account:** Allows user to sign out and delete his/her account from the system.\n    \n\nThis API is designed to provide all crud operations to one user."
 		},
 		{
-			"name": "New Folder",
-			"item": []
+			"name": "Identities",
+			"item": [
+				{
+					"name": "Admin Control",
+					"item": [
+						{
+							"name": "Approve Identity",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/identity/approve/:userID",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"identity",
+										"approve",
+										":userID"
+									],
+									"variable": [
+										{
+											"key": "userID",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Refuse Identity",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/identity/refuse/:userID",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"identity",
+										"refuse",
+										":userID"
+									],
+									"variable": [
+										{
+											"key": "userID",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Review Identity",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/identity/review/:userID",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"identity",
+										"review",
+										":userID"
+									],
+									"variable": [
+										{
+											"key": "userID",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Upload Card image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "img",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/identity/upload-card-image",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"identity",
+								"upload-card-image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload selfie image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "img",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/identity/upload-selfie-image",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"identity",
+								"upload-selfie-image"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [
