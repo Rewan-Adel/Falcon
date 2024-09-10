@@ -12,6 +12,9 @@ const {
     serverErrorMessage,
     badRequestMessage
 } = require('../middlewares/error.messages.middleware');
+const {
+    passwordValidation
+} = require('../validation/profile.validation');
 
 const emailRegisterAPI = async(req, res, next)=>{
     try{
@@ -331,9 +334,6 @@ const  forgotPassword = async(req, res, next)=>{
 const resetPassword = async(req, res, next)=>{
     try{
         const { token } = req.params;
-        const { newPassword } = req.body;
-        
-        if(!newPassword) return badRequestMessage('New password is required.', res);
         const user = await User.findOne({
             where: {
                 passResetToken: token,
@@ -341,10 +341,15 @@ const resetPassword = async(req, res, next)=>{
         });
         if (!user) return badRequestMessage("Invalid token or expired.", res);
         
-        
-        //if(user.passResetExpires > Date.now()) return badRequestMessage('Token has expired.', res);
 
-        let hashedPass = await bcrypt.hash(newPassword, 10);
+        let {value,error} = passwordValidation(req.body);
+        if(error) return badRequestMessage(error.message, res);
+        
+        const checkPass = await bcrypt.compare(value.newPassword, user.password);
+        if(checkPass) return badRequestMessage('New password must be different from old password', res);
+        
+
+        let hashedPass = await bcrypt.hash(value.newPassword, 10);
         user.password = hashedPass; 
         user.passResetToken = null;
         user.passResetExpires = null;
@@ -354,7 +359,7 @@ const resetPassword = async(req, res, next)=>{
         return res.status(200).json({
             status: 'success',
             code: 200,
-            message: 'Password has been reset successfully.'
+            message: 'Password reset successfully.'
         });
     }catch(error){ 
         console.log('Error in auth.controller.js: ',error);
