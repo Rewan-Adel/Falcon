@@ -102,7 +102,7 @@ const User = db.define('User',{
     },
     auctionBid       :{type: DataTypes.DECIMAL},
     
-
+    role             :{type: DataTypes.STRING, defaultValue: 'user', enum: ['user', 'admin']},
     isVerified       :{type: DataTypes.BOOLEAN, defaultValue: false },
     signupWay        :{type: DataTypes.STRING, enum: ['email', 'phone', 'apple', 'twitter']},
     googleToken      :{type: DataTypes.STRING},
