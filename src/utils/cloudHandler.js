@@ -17,7 +17,8 @@ const uploadImgToCloud = async function(filePath){
 
 const deleteImgFromCloud = async function(publicId){
     try{
-        const image = await cloudinary.uploader.destroy(publicId);
+        let publicID = publicId.replace(/"/g, '');
+        await cloudinary.uploader.destroy(publicID);
         
         return {};
     }catch(error){
