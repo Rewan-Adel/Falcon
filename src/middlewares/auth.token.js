@@ -23,7 +23,7 @@ const protect = async(req, res, nxt)=>{
 
         if(user.passChangedAt > Date.now()) return unAuthorizedMessage('User recently changed password. Please login again.', res);
         if(user.passResetExpires >  Date.now()) return unAuthorizedMessage('User recently requested for password reset. Please login again.', res);
-        if(user.otpExpires >  Date.now()) return unAuthorizedMessage('User recently requested for OTP. Please login again.', res);
+        // if(user.otpExpires >  Date.now()) return unAuthorizedMessage('User recently requested for OTP. Please login again.', res);
         
         req.token = token;
         req.user  = user;
