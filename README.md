@@ -1,3 +1,3 @@
 Schema :
 
-![schema sLogo](./images/ERD.jpeg)
+![schema sLogo](./images/Database%20ER%20diagram(Falconion).png)

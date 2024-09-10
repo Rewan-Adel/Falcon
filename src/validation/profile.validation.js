@@ -26,14 +26,13 @@ const profileValidation= (req)=>{
 
 const passwordValidation = (req)=>{
     const schema =  new Joi.object({
-        oldPassword : Joi.string().required().trim().messages({
-            "string.empty": "Old password is required.",}),
+    
         newPassword : Joi.string().min(6).max(25).required().trim().messages({
             "string.empty": "New password is required.",
             "string.min": "Password should not be less than 6 characters.",
             "string.max": "Password should not be more than 25 characters."
         }),
-        confirmPassword: Joi.string().min(6).required().trim()
+        confirmPassword: Joi.string().min(6).trim()
         .valid(Joi.ref('newPassword')).messages({ "string.empty": "Confirm password is required.", 'any.only': 'Passwords do not match'}),
 
     }).unknown();
