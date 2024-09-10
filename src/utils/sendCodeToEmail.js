@@ -14,6 +14,22 @@ exports.sendVerifyEmail = async(user)=>{
     }
 };
 
+exports.sendVerifyEmailToChange = async(user, newEmail)=>{
+    try{
+        let otp = generateCode();
+        await sendMail(newEmail, otp);
+
+        let hashedOtp = await bcrypt.hashSync(otp, 10);
+        await await user.update({
+            otp: hashedOtp,
+            otpCount: user.otpCount + 1,
+        });
+        return true;
+    }catch(error){
+        console.error(error);
+    }
+};
+
 exports.resetPasswordEmail = async(user, url)=>{
     try{
         let otp = generateCode();
