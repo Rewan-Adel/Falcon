@@ -12,7 +12,7 @@ const {
     profileValidation,
     passwordValidation
 } = require('../validation/profile.validation');
-const {sendVerifyEmail} = require('../utils/sendCodeToEmail');
+const {sendVerifyEmailToChange} = require('../utils/sendCodeToEmail');
 const {emailValidation} = require('../validation/signup.validation');
 
 const getProfile = async(req, res)=>{
@@ -100,7 +100,7 @@ const deleteProfileImage = async(req, res)=>{
         if(user.avatarPublicId === 'default_j5ftby_jspjve') 
             return badRequestMessage('Image already deleted.', res);
 
-        const image = await deleteImgFromCloud(user.avatarPublicId);
+        await deleteImgFromCloud(user.avatarPublicId);
         await User.update({
             avatarURL: 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg',
             avatarPublicId: 'default_j5ftby_jspjve'
@@ -134,6 +134,7 @@ const changePassword = async(req, res)=>{
         
         if(value.oldPassword === value.newPassword) return badRequestMessage('New password must be different from old password', res);
         value.newPassword = await bcrypt.hash(value.newPassword, 10);
+        value.confirmPassword = null;
         
         await User.update(value, {where : { userID: userID}});
         
@@ -163,18 +164,20 @@ const changeEmail = async(req, res)=>{
             }
         });
         if(checkEmail) return badRequestMessage('Email already exists.', res);
-
-        let sendMil = await sendVerifyEmail(user);
+        
+        let sendMil = await sendVerifyEmailToChange(user, value.email);
     
         if(!sendMil) {
             await user.destroy();
             return "Couldn't send verification email";
         }
-        req.email = value;
+    
         return res.status(200).json({
             status: 'success',
             code: 200,
             message: 'Verification code is sent.',
+            userID: user.userID,
+            newEmail: value.email
     });
     }catch(error){
         console.log('Error at change email: ', error);
@@ -182,20 +185,21 @@ const changeEmail = async(req, res)=>{
     }
 };
 
-const verifyCodeToChange = async(req, res, next)=>{
-    try{
-        let {otp} = req.body;
-        let {user} = req;
+const verifyCodeToChange = async (req, res, next) => {
+    try {
+        const { userID, newEmail, otp } = req.body;
+        if (!otp) return badRequestMessage('Verification code is required.', res);
 
-        if(!otp) return badRequestMessage('Verification code is required.', res);
 
-        otp = otp.toString();
-        const isMatch = await bcrypt.compare(otp, user.otp);
-        if(!isMatch) return badRequestMessage('Invalid verification code', res);
-        
-        if(user.otpExpires < Date.now()) return badRequestMessage('Verification code has expired.', res);
-        
-        await user.update({email: req.email, otp: null, otpCount: 0, otpExpires: null});
+        let user = await User.findByPk(userID);
+        if (!user) return badRequestMessage('User not found.', res);
+
+        const isMatch = await bcrypt.compare(otp.toString(), user.otp);
+        if (!isMatch) return badRequestMessage('Invalid verification code', res);
+
+        if (user.otpExpires > Date.now()) return badRequestMessage('Verification code has expired.', res);
+
+        await user.update({ email: newEmail, otp: null, otpCount: 0, otpExpires: null });
 
         return res.status(200).json({
             status: 'success',
@@ -203,12 +207,11 @@ const verifyCodeToChange = async(req, res, next)=>{
             isVerified: true,
             message: 'Valid code.'
         });
-    }catch(error){
-        console.log('Error in auth.controller.js: ',error);
+    } catch (error) {
+        console.log('Error in auth.controller.js: ', error);
         next(serverErrorMessage(error, res));
     }
-}; 
-
+};
 module.exports = {
     getProfile,
     updateProfile,
