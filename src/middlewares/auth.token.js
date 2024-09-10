@@ -16,13 +16,18 @@ const protect = async(req, res, nxt)=>{
         
         if(!token) return unAuthorizedMessage('Please login for get access', res);
 
+
         let decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findByPk(decoded.userID);
-
         if(!user) return notFoundMessage("Invalid token", res);
 
-        if(user.passChangedAt > Date.now()) return unAuthorizedMessage('User recently changed password. Please login again.', res);
-        if(user.passResetExpires >  Date.now()) return unAuthorizedMessage('User recently requested for password reset. Please login again.', res);
+        // Check if user changed password after token was issued
+        let passChangedAt;
+        if (user.passwordChangedAt) 
+        passChangedAt = parseInt(user.passwordChangedAt.getTime() / 1000, 10);
+
+        if(passChangedAt > decoded.iat) return unAuthorizedMessage('User recently changed password. Please login again.', res);
+        //if(user.passResetExpires >  Date.now()) return unAuthorizedMessage('User recently requested for password reset. Please login again.', res);
         // if(user.otpExpires >  Date.now()) return unAuthorizedMessage('User recently requested for OTP. Please login again.', res);
         
         req.token = token;
@@ -34,6 +39,13 @@ const protect = async(req, res, nxt)=>{
        // serverErrorMessage(error, res);
     }
 };
+
+const restrictTo = (...roles)=>{
+    return (req, res, nxt)=>{
+        if(!roles.includes(req.user.role)) return unAuthorizedMessage('Unauthorized!', res);
+        nxt();
+    };
+}; // Implement this function to restrict access to certain routes
 
 const generateToken = async(userID, res)=>{
     try{
@@ -55,5 +67,6 @@ const generateToken = async(userID, res)=>{
 
 module.exports = {
     protect, 
+    restrictTo,
     generateToken
 };  
