@@ -9,7 +9,7 @@ const Identities = db.define('Identities', {
     },
     userID: {
         type: DataTypes.INTEGER,
-    },
+    },//FOREIGN KEY
     cardImageURL:{
         type: DataTypes.STRING,
     }, 
