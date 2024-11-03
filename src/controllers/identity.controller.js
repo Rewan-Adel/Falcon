@@ -2,7 +2,7 @@ const {
     serverErrorMessage,
     badRequestMessage
 } = require('../middlewares/error.messages.middleware');
-const Identities = require('../models/Identities.model');
+const Identities = require('../models/identity.model');
 const { 
     uploadImgToCloud 
 } = require('../utils/cloudHandler');

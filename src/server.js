@@ -7,7 +7,7 @@ const {notFoundError} = require('./middlewares/error.messages.middleware')
 
 const authRouter = require('./routes/auth.route');
 const userRouter = require('./routes/user.route');
-const identitiesRouter = require('./routes/identities.route');
+const identitiesRouter = require('./routes/identity.route');
 const marketRouter = require('./routes/market.route');
 
 const app = express();

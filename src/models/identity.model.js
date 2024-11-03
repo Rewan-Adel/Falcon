@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const db = require('../config/Database');
 
-const Identities = db.define('Identities', {
+const Identity = db.define('Identity', {
     identityID :{
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -21,7 +21,8 @@ const Identities = db.define('Identities', {
         defaultValue: 'pending'
     }
 },{
+    tableName : 'Identity',
     timestamps: false
 });
 
-module.exports = Identities;
+module.exports = Identity;

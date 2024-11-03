@@ -2,14 +2,17 @@ const router = require('express').Router();
 const {
     createProduct,
     getAllProducts,
-    updateProduct
+    updateProduct,
+    getOneProduct
 } = require('../controllers/market.controller');
 const {uploadMultiple} = require('../utils/multer');
-const {protect,restrictTo} = require('../middlewares/auth.token'); 
+const {protect,restrictTo, checkVerification} = require('../middlewares/auth.token'); 
 
 router.use(protect);
-router.post("/add",uploadMultiple, createProduct);
+router.use(checkVerification);
+router.post("/add", uploadMultiple, createProduct);
 router.get("/get-all", getAllProducts);
-router.patch("/update/:id", updateProduct);
+router.get("/get/:id", getOneProduct);
+router.patch("/update/:id", uploadMultiple, updateProduct);
 
 module.exports = router;

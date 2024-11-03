@@ -113,7 +113,9 @@ const User = db.define('User',{
     passResetToken   :{type: DataTypes.STRING},
     passResetExpires :{type: DataTypes.DATE},
 },{
+    tableName : 'User',
     timestamps: false
+
 });
 const EXCLUDED_FIELDS = [
     'avatarPublicId',
@@ -134,6 +136,91 @@ User.prototype.toJSON = function(){
     return user;
 }
 
+User.associations = models =>{
+    User.hasMany(models.Falcon, {
+        foreignKey: 'ownerID',
+        as: 'Falcons'
+    });
+    User.hasMany(models.Event, {
+        foreignKey: 'ownerID',
+        as: 'Events'
+    });
+    User.hasMany(models.EventAttendee, {
+        foreignKey: 'userID',
+        as: 'EventAttendees'
+    });
+    User.hasMany(models.Ticket, {
+        foreignKey: 'userID',
+        as: 'Tickets'
+    });
+    User.hasMany(models.Post, {
+        foreignKey: 'userID',
+        as: 'Posts'
+    });
+    User.hasMany(models.Comment, {
+        foreignKey: 'userID',
+        as: 'comments'
+    });
+    User.hasMany(models.Like, {
+        foreignKey: 'userID',
+        as: 'Likes'
+    });
+    User.hasMany(models.Follow, {
+        foreignKey: 'followerID',
+        as: 'follows'
+    });
+    User.hasMany(models.Follow, {
+        foreignKey: 'followedID',
+        as: 'follows'
+    });
+    User.hasMany(models.Friendship, {
+        foreignKey: 'userID1',
+        as: 'Friendships'
+    });
+    User.hasMany(models.Friendship, {
+        foreignKey: 'userID2',
+        as: 'Friendships'
+    });
+    User.hasMany(models.Notification, {
+        foreignKey: 'receiverID',
+        as: 'notifications'
+    });
+    User.hasMany(models.Group_, {
+        foreignKey: 'creatorID',
+        as: 'Group_s'
+    });
+    User.hasMany(models.GroupMember, {
+        foreignKey: 'userID',
+        as: 'GroupMembers'
+    });
+    User.hasMany(models.Message, {
+        foreignKey: 'senderID',
+        as: 'Messages'
+    });
+    User.hasMany(models.Message, {
+        foreignKey: 'receiverID',
+        as: 'Messages'
+    });
+    User.hasMany(models.Auction, {
+        foreignKey: 'ownerID',
+        as: 'Auctions'
+    });
+    User.hasMany(models.Auction, {
+        foreignKey: 'winnerID',
+        as: 'Auctions'
+    });
+    User.hasMany(models.AuctionParticipant, {
+        foreignKey: 'userID',
+        as: 'AuctionParticipants'
+    });
+
+    User.hasOne(models.Identity, {
+        foreignKey: 'userID',
+        as: 'Identitys'
+    })
+
+   // return User;    
+}
 // User.beforeSave(async(user) => {
 //     if(user.changed('password')){
 //         user.password = await bcrypt.hashSync(user.password, 10);

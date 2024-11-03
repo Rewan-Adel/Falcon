@@ -1,8 +1,8 @@
 const db = require('../config/Database');
 const {DataTypes} = require('sequelize');
 
-const Falconin = db.define('Falconins',{
-    falconinID : {
+const Falcon = db.define('Falcon',{
+    FalconID : {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -10,7 +10,7 @@ const Falconin = db.define('Falconins',{
     ownerID : {
         type: DataTypes.INTEGER,
         references:{
-            model: 'Users',
+            model: 'User',
             key: 'userID'
         },
         allowNull: false
@@ -60,7 +60,17 @@ const Falconin = db.define('Falconins',{
         type: DataTypes.TIME
     }
 },{
+    tableName : 'Falcon',
     timestamps: false
-})
+});
 
-module.exports = Falconin;
+Falcon.associate = (models) => {
+    Falcon.belongsTo(models.User, {
+        foreignKey: 'userID',
+        as: 'ownerID'
+    });
+
+    //return Falcon;
+};
+
+module.exports = Falcon;

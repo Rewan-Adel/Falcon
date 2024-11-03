@@ -1,8 +1,8 @@
 const joi = require('joi');
 
 
-const falconinValidation = (req)=>{
-    const falconinSchema = joi.object({
+const FalconValidation = (req)=>{
+    const FalconSchema = joi.object({
         name : joi.string().required().messages({
             "string.empty" : "Name is required"
         }),
@@ -45,14 +45,14 @@ const falconinValidation = (req)=>{
     
     }).unknown();
 
-    const {value, error} = falconinSchema.validate(req)
+    const {value, error} = FalconSchema.validate(req)
     return  {value, error};
 
 }  
 
-const updateFalconinValidation = (req)=>{
+const updateFalconValidation = (req)=>{
 
-    const falconinSchema = joi.object({
+    const FalconSchema = joi.object({
         conditionOfUse : joi.string()
         .valid('New', "Used", "Light Used","Like New")
         .trim()
@@ -69,12 +69,12 @@ const updateFalconinValidation = (req)=>{
     
     }).unknown();
 
-    const {value, error} = falconinSchema.validate(req)
+    const {value, error} = FalconSchema.validate(req)
     return  {value, error};
 
 }  
 
 module.exports = {
-    falconinValidation,
-    updateFalconinValidation
+    FalconValidation,
+    updateFalconValidation
 };

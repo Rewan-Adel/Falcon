@@ -1,7 +1,7 @@
-CREATE DATABASE falconion;
-USE falconion;
+CREATE DATABASE falcon;
+USE falcon;
 
-CREATE TABLE Users (
+CREATE TABLE User(
     userID INT PRIMARY KEY AUTO_INCREMENT,
     firstName VARCHAR(25),
     lastName  VARCHAR(25),
@@ -34,17 +34,17 @@ CREATE TABLE Users (
     passResetExpires datetime
 );
 
-CREATE TABLE Identities (
+CREATE TABLE Identity(
     identityID INT PRIMARY KEY AUTO_INCREMENT,
     userID INT,
     cardImageURL VARCHAR(255), 
     selfieImageURL VARCHAR(255),
     Verification enum('approved', 'refused', 'pending', 'review'),
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (userID) REFERENCES User(userID)
 );
 
-CREATE TABLE Falconins (
-    falconinID INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Falcon(
+    FalconID INT PRIMARY KEY AUTO_INCREMENT,
     ownerID INT,
     name VARCHAR(100) ,
     description TEXT,
@@ -62,20 +62,20 @@ CREATE TABLE Falconins (
     status ENUM('Running', 'Expired') DEFAULT 'Running',     
 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ownerID) REFERENCES Users(userID)
+    FOREIGN KEY (ownerID) REFERENCES User(userID)
 );
 
-CREATE TABLE Posts (
+CREATE TABLE Post(
     postID INT PRIMARY KEY AUTO_INCREMENT,
     userID INT,
     content VARCHAR(255),
-    mediaURL VARCHAR(255),
+    images json,
 	privacy ENUM('Public', 'Private') DEFAULT 'Public',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (userID) REFERENCES User(userID)
 );
 
-CREATE TABLE Events (
+CREATE TABLE Event(
     eventID INT PRIMARY KEY AUTO_INCREMENT,
     ownerID INT,
     name VARCHAR(100),
@@ -92,39 +92,39 @@ CREATE TABLE Events (
     ticketPrice DECIMAL(10, 2),
     mediaURL VARCHAR(255), 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ownerID) REFERENCES Users(userID)
+    FOREIGN KEY (ownerID) REFERENCES User(userID)
 );
 
-CREATE TABLE EventAttendees (
+CREATE TABLE EventAttendee(
     eventID INT,
     userID INT,
     attendanceStatus ENUM('Interested', 'Going'),
     PRIMARY KEY (eventID, userID),
-    FOREIGN KEY (eventID) REFERENCES Events(eventID),
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (eventID) REFERENCES Event(eventID),
+    FOREIGN KEY (userID) REFERENCES User(userID)
 );
 
-CREATE TABLE Tickets (
+CREATE TABLE Ticket(
     ticketID INT PRIMARY KEY AUTO_INCREMENT,
     eventID INT,
     userID INT,
     noTickets INT  DEFAULT 1,
     attendantName VARCHAR(255) ,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (eventID) REFERENCES Events(eventID),
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (eventID) REFERENCES Event(eventID),
+    FOREIGN KEY (userID) REFERENCES User(userID)
 );
 
-CREATE TABLE Comments (
+CREATE TABLE Comment(
     commentID INT PRIMARY KEY AUTO_INCREMENT,
     postID INT,
     eventID INT,
     userID INT,
     content VARCHAR(255) ,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID) REFERENCES Users(userID),
-    FOREIGN KEY (postID) REFERENCES Posts(postID),
-    FOREIGN KEY (eventID) REFERENCES Events(eventID)
+    FOREIGN KEY (userID) REFERENCES User(userID),
+    FOREIGN KEY (postID) REFERENCES Post(postID),
+    FOREIGN KEY (eventID) REFERENCES Event(eventID)
 );
 
 CREATE TABLE Likes (
@@ -132,68 +132,68 @@ CREATE TABLE Likes (
     postID INT,
     commentID INT,
     userID INT,
-    FOREIGN KEY (userID) REFERENCES Users(userID),
-    FOREIGN KEY (postID) REFERENCES Posts(postID),
-    FOREIGN KEY (commentID) REFERENCES Comments(commentID)
+    FOREIGN KEY (userID) REFERENCES User(userID),
+    FOREIGN KEY (postID) REFERENCES Post(postID),
+    FOREIGN KEY (commentID) REFERENCES Comment(commentID)
 );
 
-CREATE TABLE Friendships (
+CREATE TABLE Friendship (
     friendshipID INT PRIMARY KEY AUTO_INCREMENT,
     userID1 INT,
     userID2 INT,
     isApproval BOOLEAN,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID1) REFERENCES Users(userID),
-    FOREIGN KEY (userID2) REFERENCES Users(userID)
+    FOREIGN KEY (userID1) REFERENCES User(userID),
+    FOREIGN KEY (userID2) REFERENCES User(userID)
 );
 
-CREATE TABLE Follows (
-    followingUserID INT,  
-    followedUserID INT,    
-    PRIMARY KEY (followingUserID, followedUserID),
-    FOREIGN KEY (followingUserID) REFERENCES Users(userID),
-    FOREIGN KEY (followedUserID) REFERENCES Users(userID)
+CREATE TABLE Follow (
+    followerID INT,  
+    followedID INT,    
+    PRIMARY KEY (followerID, followedID),
+    FOREIGN KEY (followerID) REFERENCES User(userID),
+    FOREIGN KEY (followedID) REFERENCES User(userID)
 );
 
-CREATE TABLE Groups_(
+CREATE TABLE Group_(
     groupID INT PRIMARY KEY AUTO_INCREMENT,
     creatorID INT,
     name VARCHAR(255),
     description TEXT,
 	privacy ENUM('Public', 'Private') DEFAULT 'Public',
     isHidden BOOLEAN,
-    FOREIGN KEY (creatorID) REFERENCES Users(userID)
+    FOREIGN KEY (creatorID) REFERENCES User(userID)
 );
 
-CREATE TABLE GroupMembers (
+CREATE TABLE GroupMember (
     groupID INT,
     userID INT,
     PRIMARY KEY (groupID, userID), 
-    FOREIGN KEY (groupID) REFERENCES Groups_(groupID),
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (groupID) REFERENCES Group_(groupID),
+    FOREIGN KEY (userID) REFERENCES User(userID)
 );
 
-CREATE TABLE Messages (
+CREATE TABLE Message (
     messageID INT PRIMARY KEY AUTO_INCREMENT,
     senderID INT,
     receiverID INT,
     content VARCHAR(255),
     mediaURL VARCHAR(255),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (senderID) REFERENCES Users(userID),
-    FOREIGN KEY (receiverID) REFERENCES Users(userID)
+    FOREIGN KEY (senderID) REFERENCES User(userID),
+    FOREIGN KEY (receiverID) REFERENCES User(userID)
 );
 
 CREATE TABLE Notifications (
     notificationID INT PRIMARY KEY AUTO_INCREMENT,
-    userID INT,
+    receiverID INT,
     content VARCHAR(255) ,
     isRead BOOLEAN DEFAULT 0,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (receiverID) REFERENCES User(userID)
 );
 
-CREATE TABLE Auctions (
+CREATE TABLE Auction (
     auctionID INT PRIMARY KEY AUTO_INCREMENT,
     ownerID INT,
     winnerID INT,
@@ -209,22 +209,16 @@ CREATE TABLE Auctions (
     minBid DECIMAL(10, 2), 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (winnerID) REFERENCES Users(userID),
-    FOREIGN KEY (ownerID) REFERENCES Users(userID)
+    FOREIGN KEY (winnerID) REFERENCES User(userID),
+    FOREIGN KEY (ownerID) REFERENCES User(userID)
 );
 
-CREATE TABLE AuctionParticipants (
+CREATE TABLE AuctionParticipant (
     auctionID INT,
     userID INT,
     PRIMARY KEY (auctionID, userID),
-    FOREIGN KEY (auctionID) REFERENCES Auctions(auctionID),
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (auctionID) REFERENCES Auction(auctionID),
+    FOREIGN KEY (userID) REFERENCES User(userID)
 );
 
-select * from users;
-select * from Identities;
-ALTER TABLE Identities
-ADD COLUMN Verification enum('approved', 'refused', 'pending', 'review');
-
-ALTER TABLE Users
-ADD COLUMN role enum('user', 'admin');
+select * from users

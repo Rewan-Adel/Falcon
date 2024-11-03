@@ -40,6 +40,16 @@ const protect = async(req, res, nxt)=>{
     }
 };
 
+const checkVerification = async(req, res, nxt)=>{
+    try{
+        if(req.user.isVerified === false) return unAuthorizedMessage('User is not verified. Please verify your email.', res);
+        nxt();
+    }
+    catch(error){
+        console.log('Error at token.middleware file: ', error);
+    }
+};
+
 const restrictTo = (...roles)=>{
     return (req, res, nxt)=>{
         if(!roles.includes(req.user.role)) return unAuthorizedMessage('Unauthorized!', res);
@@ -68,5 +78,6 @@ const generateToken = async(userID, res)=>{
 module.exports = {
     protect, 
     restrictTo,
+    checkVerification,
     generateToken
 };  

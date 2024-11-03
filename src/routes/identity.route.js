@@ -6,13 +6,14 @@ const {
     approveIdentity,
     refuseIdentity,
     reviewIdentity
-} = require('../controllers/identities.controller.js');
+} = require('../controllers/identity.controller.js');
 
-const {uploadSingle} = require("../utils/multer");
-const {protect,restrictTo} = require('../middlewares/auth.token'); 
+const {uploadSingle} = require("../utils/multer.js");
+const {protect,restrictTo, checkVerification} = require('../middlewares/auth.token.js'); 
 
 // User routes
 router.use(protect);
+router.use(checkVerification);
 router.post('/upload-card-image',  uploadSingle, uploadCardImage);
 router.post('/upload-selfie-image',uploadSingle, uploadSelfieImage);
 
