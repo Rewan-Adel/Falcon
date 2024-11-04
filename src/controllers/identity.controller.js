@@ -2,18 +2,18 @@ const {
     serverErrorMessage,
     badRequestMessage
 } = require('../middlewares/error.messages.middleware');
-const Identities = require('../models/identity.model');
 const { 
     uploadImgToCloud 
 } = require('../utils/cloudHandler');
 
-
+const {models} = require('../config/Database');
+const {Identity} = models;
 const uploadCardImage = async(req, res)=>{
     const {userID} = req.user;
     if(!req.file) return badRequestMessage('Card image is required.',res);
 
     try{
-        const identity = await Identities.findOne({where: {userID}});
+        const identity = await Identity.findOne({where: {userID}});
         let img = await uploadImgToCloud(req.file.path);
         
         if(identity) {
@@ -26,7 +26,7 @@ const uploadCardImage = async(req, res)=>{
             });
         }
 
-        await Identities.create({userID, cardImageURL: img.url});
+        await Identity.create({userID, cardImageURL: img.url});
 
         return res.status(201).json({
             status: 'success',
@@ -45,7 +45,7 @@ const uploadSelfieImage = async(req, res)=>{
     if(!req.file) return badRequestMessage('Selfie image URL is required.',res);
     
     try{
-        const identity = await Identities.findOne({where: {userID}});
+        const identity = await Identity.findOne({where: {userID}});
         let img = await uploadImgToCloud(req.file.path);
 
         if(identity) {
@@ -59,7 +59,7 @@ const uploadSelfieImage = async(req, res)=>{
         };
 
         identity.selfieImageURL = url;
-        await Identities.create({userID, selfieImageURL: img.url});
+        await Identity.create({userID, selfieImageURL: img.url});
 
         return res.status(201).json({
             status: 'success',
@@ -77,7 +77,7 @@ const uploadSelfieImage = async(req, res)=>{
 const approveIdentity = async(req, res)=>{
     try{
         const {userID} = req.params;
-        const identity = await Identities.findOne({where: {userID}});
+        const identity = await Identity.findOne({where: {userID}});
         
         if(!identity) return badRequestMessage('Identity not found!', res);
         if(identity.Verification === 'approved') return badRequestMessage('Identity already approved.', res);
@@ -98,7 +98,7 @@ const approveIdentity = async(req, res)=>{
 const refuseIdentity = async(req, res)=>{
     try{
         const {userID} = req.params;
-        const identity = await Identities.findOne({where: {userID}});
+        const identity = await Identity.findOne({where: {userID}});
         
         if(!identity) return badRequestMessage('Identity not found!', res);
         if(identity.Verification === 'refused') return badRequestMessage('Identity already refused.', res);
@@ -120,7 +120,7 @@ const refuseIdentity = async(req, res)=>{
 const reviewIdentity = async(req, res)=>{
     try{
         const {userID} = req.params;
-        const identity = await Identities.findOne({where: {userID}});
+        const identity = await Identity.findOne({where: {userID}});
         
         if(!identity) return badRequestMessage('Identity not found!', res);
         if(identity.Verification === 'review') return badRequestMessage('Identity already review.', res);

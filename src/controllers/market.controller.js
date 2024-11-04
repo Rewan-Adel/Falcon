@@ -1,4 +1,5 @@
-const Falcon = require("../models/Falcon.model");
+const {models} = require("../config/Database");
+const {Falcon, User} = models;
 const {
     badRequestMessage,
     serverErrorMessage
@@ -29,17 +30,17 @@ const createProduct = async (req, res)=>{
         if(!product) return serverErrorMessage({message:"Can't create new falcon."}, res);
 
     
+        let imagesArray = [];
         for(let i=0; i< req.files.length; i++){
             const {url, public_id} = await uploadImgToCloud(req.files[i].path);
-
-            product.images.push({
-            mediaURL: url,
-            mediaPublicId: public_id
-        });
-    }
-    console.log("before save: ", product.images)
-    await product.save();
-    console.log("after save: ", product.images)
+            imagesArray.push({
+                mediaURL: url,
+                mediaPublicId: public_id
+            });
+        }
+        product.images = imagesArray;
+        await product.save();
+        
         return  res.status(200).json({
             status: 'success',
             code: 200,
@@ -63,7 +64,10 @@ const getAllProducts = async(req, res)=>{
     const {count, rows} = await Falcon.findAndCountAll({
         limit: limit,
         offset: skip,
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']],
+        include:[
+            {model: User, as: 'owner'}
+        ]
     });
 
     return res.status(200).json({
@@ -84,22 +88,23 @@ const updateProduct = async (req, res)=>{
 
         let product = await Falcon.findByPk(req.params.id);
         if(!product) return badRequestMessage("Product not founded!", res);
-        if(product.ownerID != userID) return badRequestMessage("you don't have the right to update this product.",res);
+        if(product.ownerID != userID) return badRequestMessage("yYou are not allowed to update this product.",res);
         
-        product = await Falcon.update(value, {
+        await Falcon.update(value, {
             where:{ FalconID : req.params.id }
         });
         
         
         if (req.files && req.files.length !== 0) {
+            let imagesArray = [];
             for(let i=0; i< req.files.length; i++){
                 const {url, public_id} = await uploadImgToCloud(req.files[i].path);
-                product.images.push({
-                    mediaURL: url,
-                    mediaPublicId: public_id
-                });
-            }
-
+                imagesArray.push({
+                mediaURL: url,
+                mediaPublicId: public_id
+            });
+        }
+            product.images = imagesArray;
             await product.save();
         }
         return  res.status(200).json({
@@ -132,9 +137,33 @@ const getOneProduct = async (req, res)=>{
     }
 };
 
+const deleteProduct = async(req, res)=>{
+    try{
+        const {userID} = req.user;
+        const product = await Falcon.findByPk(req.params.id);
+        if(!product) return badRequestMessage("Product not founded!", res);
+        if(product.ownerID != userID) return badRequestMessage("You are not allowed  to delete this product.",res);
+
+        await Falcon.destroy({
+            where: { FalconID: req.params.id }
+        });
+
+        return res.status(200).json({
+            status: 'success',
+            code: 200,
+            message: "Product is deleted successfully."
+        });
+    }
+    catch(err){
+        console.log("Error at DeleteProduct function:  ", err)
+        return serverErrorMessage(err, res);
+    }
+};
+
 module.exports = {
     createProduct,
     getAllProducts,
     updateProduct,
-    getOneProduct
+    getOneProduct,
+    deleteProduct
 }
