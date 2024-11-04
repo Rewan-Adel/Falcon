@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "12462bf4-5491-405c-ac7b-5d2e0c8a687b",
-		"name": "Falconion",
+		"name": "Falcon website",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25350743"
 	},
@@ -64,7 +64,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"\"\r\n}",
+									"raw": "{\r\n    \"email\": \"rewanadel1266@gmail.com\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -587,7 +587,7 @@
 			"description": "The User API provides endpoints for :\n\n- **User Profile:** get all user info**.**\n    \n- **Update User:** Enables user to update his/her info.\n    \n- **Delete Account:** Allows user to sign out and delete his/her account from the system.\n    \n\nThis API is designed to provide all crud operations to one user."
 		},
 		{
-			"name": "Identities",
+			"name": "Identity",
 			"item": [
 				{
 					"name": "Admin Control",
@@ -729,6 +729,445 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Market",
+			"item": [
+				{
+					"name": "Add Product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "state",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "conditionOfUse",
+									"value": "",
+									"description": "'New', \"Used\", \"Light Used\",\"Like New\"",
+									"type": "text"
+								},
+								{
+									"key": "communicationMethod",
+									"value": "",
+									"description": "\"Chat\",\"Mobile phone\", \"Both\"",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/market/add",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"market",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "category",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "price",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "state",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "city",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "color",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "conditionOfUse",
+									"value": "",
+									"description": "'New', \"Used\", \"Light Used\",\"Like New\"",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "communicationMethod",
+									"value": "",
+									"description": "\"Chat\",\"Mobile phone\", \"Both\"",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/market/update/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"market",
+								"update",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/market/get-all?page=1&limit=10",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"market",
+								"get-all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/market/get/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"market",
+								"get",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/market/delete/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"market",
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Social Media",
+			"item": [
+				{
+					"name": "Post",
+					"item": [
+						{
+							"name": "Add Post",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "content",
+											"value": "ee",
+											"type": "text"
+										},
+										{
+											"key": "images",
+											"type": "file",
+											"src": "OIP (1).jpeg"
+										},
+										{
+											"key": "privacy",
+											"value": "public",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/api/social/post/add",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"social",
+										"post",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdatePost",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "content",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "images",
+											"type": "file",
+											"src": [],
+											"disabled": true
+										},
+										{
+											"key": "privacy",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/api/social/post/update/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"social",
+										"post",
+										"update",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Posts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/social/post/get-all?page=1&limit=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"social",
+										"post",
+										"get-all"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get One Post",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/social/post/get/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"social",
+										"post",
+										"get",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete One Post",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/social/post/delete/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"social",
+										"post",
+										"delete",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
