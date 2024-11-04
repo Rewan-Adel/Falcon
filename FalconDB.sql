@@ -40,7 +40,7 @@ CREATE TABLE Identity(
     cardImageURL VARCHAR(255), 
     selfieImageURL VARCHAR(255),
     Verification enum('approved', 'refused', 'pending', 'review'),
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Falcon(
@@ -70,9 +70,9 @@ CREATE TABLE Post(
     userID INT,
     content VARCHAR(255),
     images json,
-	privacy ENUM('Public', 'Private') DEFAULT 'Public',
+	privacy ENUM('public', 'private') DEFAULT 'public',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (userID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Event(
@@ -92,7 +92,7 @@ CREATE TABLE Event(
     ticketPrice DECIMAL(10, 2),
     mediaURL VARCHAR(255), 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ownerID) REFERENCES User(userID)
+    FOREIGN KEY (ownerID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE EventAttendee(
@@ -101,7 +101,7 @@ CREATE TABLE EventAttendee(
     attendanceStatus ENUM('Interested', 'Going'),
     PRIMARY KEY (eventID, userID),
     FOREIGN KEY (eventID) REFERENCES Event(eventID),
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (userID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Ticket(
@@ -111,8 +111,8 @@ CREATE TABLE Ticket(
     noTickets INT  DEFAULT 1,
     attendantName VARCHAR(255) ,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (eventID) REFERENCES Event(eventID),
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (eventID) REFERENCES Event(eventID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (userID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Comment(
@@ -122,9 +122,9 @@ CREATE TABLE Comment(
     userID INT,
     content VARCHAR(255) ,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID) REFERENCES User(userID),
-    FOREIGN KEY (postID) REFERENCES Post(postID),
-    FOREIGN KEY (eventID) REFERENCES Event(eventID)
+    FOREIGN KEY (userID) REFERENCES User(userID)    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (postID) REFERENCES Post(postID)    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (eventID) REFERENCES Event(eventID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Likes (
@@ -132,9 +132,9 @@ CREATE TABLE Likes (
     postID INT,
     commentID INT,
     userID INT,
-    FOREIGN KEY (userID) REFERENCES User(userID),
-    FOREIGN KEY (postID) REFERENCES Post(postID),
-    FOREIGN KEY (commentID) REFERENCES Comment(commentID)
+    FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (postID) REFERENCES Post(postID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (commentID) REFERENCES Comment(commentID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Friendship (
@@ -143,16 +143,16 @@ CREATE TABLE Friendship (
     userID2 INT,
     isApproval BOOLEAN,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userID1) REFERENCES User(userID),
-    FOREIGN KEY (userID2) REFERENCES User(userID)
+    FOREIGN KEY (userID1) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (userID2) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Follow (
     followerID INT,  
     followedID INT,    
     PRIMARY KEY (followerID, followedID),
-    FOREIGN KEY (followerID) REFERENCES User(userID),
-    FOREIGN KEY (followedID) REFERENCES User(userID)
+    FOREIGN KEY (followerID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (followedID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Group_(
@@ -169,8 +169,8 @@ CREATE TABLE GroupMember (
     groupID INT,
     userID INT,
     PRIMARY KEY (groupID, userID), 
-    FOREIGN KEY (groupID) REFERENCES Group_(groupID),
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (groupID) REFERENCES Group_(groupID)  ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (userID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Message (
@@ -180,8 +180,8 @@ CREATE TABLE Message (
     content VARCHAR(255),
     mediaURL VARCHAR(255),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (senderID) REFERENCES User(userID),
-    FOREIGN KEY (receiverID) REFERENCES User(userID)
+    FOREIGN KEY (senderID) REFERENCES User(userID)    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (receiverID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Notifications (
@@ -190,7 +190,7 @@ CREATE TABLE Notifications (
     content VARCHAR(255) ,
     isRead BOOLEAN DEFAULT 0,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (receiverID) REFERENCES User(userID)
+    FOREIGN KEY (receiverID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Auction (
@@ -209,16 +209,16 @@ CREATE TABLE Auction (
     minBid DECIMAL(10, 2), 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (winnerID) REFERENCES User(userID),
-    FOREIGN KEY (ownerID) REFERENCES User(userID)
+    FOREIGN KEY (winnerID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (ownerID) REFERENCES User(userID)   ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE AuctionParticipant (
     auctionID INT,
     userID INT,
     PRIMARY KEY (auctionID, userID),
-    FOREIGN KEY (auctionID) REFERENCES Auction(auctionID),
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (auctionID) REFERENCES Auction(auctionID)  ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (userID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 select * from users
