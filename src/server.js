@@ -7,8 +7,9 @@ const {notFoundError} = require('./middlewares/error.messages.middleware')
 
 const authRouter = require('./routes/auth.route');
 const userRouter = require('./routes/user.route');
-const identitiesRouter = require('./routes/identity.route');
+const identityRouter = require('./routes/identity.route');
 const marketRouter = require('./routes/market.route');
+const postRouter = require('./routes/post.route');
 
 const app = express();
 
@@ -20,7 +21,8 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/market', marketRouter);
-app.use('/api/identity', identitiesRouter);
+app.use('/api/identity', identityRouter);
+app.use('/api/social/post', postRouter);
 
 app.all('*', (req, res) => {
     return notFoundError(`Can't find ${req.originalUrl} on this server!`, res);
