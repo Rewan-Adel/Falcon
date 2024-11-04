@@ -13,7 +13,7 @@ router.use(protect);
 router.use(checkVerification);
 
 router.post('/add', uploadMultiple, createPost);
-router.patch('/update/:id',updatePost);
+router.patch('/update/:id',uploadMultiple,updatePost);
 
 router.get('/get-all',getAllPosts);
 router.get('/get/:id',getOnePost);

@@ -121,7 +121,12 @@ const updateProduct = async (req, res)=>{
 
 const getOneProduct = async (req, res)=>{
     try{
-        const product = await Falcon.findByPk(req.params.id);
+        const product = await Falcon.findByPk(req.params.id,
+            {
+                include: [
+                    {model: User, as: 'owner'}
+                ]
+            });
         if(!product) return badRequestMessage("Product not founded!", res);
 
         return res.status(200).json({

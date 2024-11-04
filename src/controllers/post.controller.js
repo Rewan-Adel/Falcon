@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const { models } = require('../config/Database');
 
 const { Post, User } = models;
@@ -58,7 +59,9 @@ const updatePost = async(req, res) => {
         
         if(post.userID !== userID) return badRequestMessage("You are not allowed to update this post.", res);
         
-        await post.update(req.body);
+        await Post.update(req.body, {
+            where   : {postID: id},
+        })
         if (req.files) {
             let imagesArray = [];
             for (let i = 0; i < req.files.length; i++) {
@@ -76,7 +79,6 @@ const updatePost = async(req, res) => {
             status: 'success',
             code: 200,
             message: `Post is updated successfully.`,
-            post
         })
     }catch(err){
         console.log("Error at Add Post function:  ", err)
@@ -114,21 +116,21 @@ const getAllPosts = async(req, res)=>{
 
 const getOnePost = async(req, res)=>{
     try{
-        const {id} = req.params;
-
-        const {} = await Post.findO({
-            where: {postID: id},
-            include: [
-                {model: User, as: 'user'}
-            ]
-        });
-
+        const post = await Post.findByPk(req.params.id,
+            {
+                include: [
+                    {model: User, as: 'user'}
+                ]
+            }
+        );
         if(!post) return badRequestMessage("Post not founded!", res);
-        return  res.status(200).json({
+
+        return res.status(200).json({
             status: 'success',
             code: 200,
             post
-        })
+        });
+
     }catch(error){
         console.log("Error at get one post function:  ", err)
         return serverErrorMessage(err, res);
@@ -140,7 +142,7 @@ const deletePost = async(req, res)=>{
         const {userID} = req.user;
         const post = await Post.findByPk(req.params.id);
         if(!post) return badRequestMessage("post not founded!", res);
-        if(post.ownerID != userID) return badRequestMessage("You are not allowed  to delete this post.",res);
+        if(post.userID != userID) return badRequestMessage("You are not allowed  to delete this post.",res);
 
         await Post.destroy({
             where: { postID: req.params.id }
