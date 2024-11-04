@@ -1,28 +1,43 @@
-const {DataTypes} = require('sequelize');
-const db = require('../config/Database');
+const {DataTypes,Model} = require('sequelize');
 
-const Identity = db.define('Identity', {
-    identityID :{
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    userID: {
-        type: DataTypes.INTEGER,
-    },//FOREIGN KEY
-    cardImageURL:{
-        type: DataTypes.STRING,
-    }, 
-    selfieImageURL:{
-        type: DataTypes.STRING,
-    } ,
-    Verification:{
-        type: DataTypes.ENUM('approved', 'refused', 'pending', 'review'),
-        defaultValue: 'pending'
+class Identity extends Model{
+    static init(sequelize, DataTypes){
+        return super.init({
+            identityID :{
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            userID: {
+                type: DataTypes.INTEGER,
+                references:{
+                    model: 'User',
+                    key: 'userID'
+                }
+            },
+            cardImageURL:{
+                type: DataTypes.STRING,
+            }, 
+            selfieImageURL:{
+                type: DataTypes.STRING,
+            } ,
+            Verification:{
+                type: DataTypes.ENUM('approved', 'refused', 'pending', 'review'),
+                defaultValue: 'pending'
+            }
+        },{
+            sequelize,
+            tableName : 'Identity',
+            timestamps: false
+        });
     }
-},{
-    tableName : 'Identity',
-    timestamps: false
-});
+
+    static associations(models){
+        this.belongsTo(models.User,{
+            foreignKey: 'userID',
+            as: 'user'
+        });
+    }
+}
 
 module.exports = Identity;
