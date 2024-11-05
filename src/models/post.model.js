@@ -44,6 +44,10 @@ class Post extends Model {
             foreignKey: 'userID',
             as: 'user'
         });
+        this.hasMany(models.Comment, {
+            foreignKey: 'commentID',
+            as: 'comments'
+        });
         // other associations...
     }
 }
