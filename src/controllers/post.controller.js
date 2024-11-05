@@ -1,4 +1,3 @@
-const { where } = require('sequelize');
 const { models } = require('../config/Database');
 
 const { Post, User } = models;
@@ -37,9 +36,9 @@ const createPost = async(req, res) => {
             await post.save();
         }
 
-        return  res.status(200).json({
+        return  res.status(201).json({
             status: 'success',
-            code: 200,
+            code: 201,
             message: `Post is added successfully.`,
             post
         })
@@ -193,5 +192,6 @@ module.exports = {
     getAllPosts,
     getOnePost,
     updatePost,
-    deletePost
+    deletePost,
+    getUserPosts
 };

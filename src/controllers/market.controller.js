@@ -41,9 +41,9 @@ const createProduct = async (req, res)=>{
         product.images = imagesArray;
         await product.save();
         
-        return  res.status(200).json({
+        return  res.status(201).json({
             status: 'success',
-            code: 200,
+            code: 201,
             message: `${product.name} is added successfully.`,
             product
         })
