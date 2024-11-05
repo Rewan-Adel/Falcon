@@ -140,10 +140,10 @@ class User extends Model {
             foreignKey: 'userID',
             as: 'Posts'
         });
-        // this.hasMany(models.Comment, {
-        //     foreignKey: 'userID',
-        //     as: 'comments'
-        // });
+        this.hasMany(models.Comment, {
+            foreignKey: 'userID',
+            as: 'comments'
+        });
         // this.hasMany(models.Like, {
         //     foreignKey: 'userID',
         //     as: 'Likes'

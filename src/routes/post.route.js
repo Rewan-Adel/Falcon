@@ -4,7 +4,8 @@ const {
     getAllPosts,
     getOnePost,
     updatePost,
-    deletePost
+    deletePost,
+    getUserPosts
 } = require('../controllers/post.controller');
 const { uploadMultiple } = require('../utils/multer');
 const { protect, checkVerification } = require('../middlewares/auth.token');
@@ -17,6 +18,7 @@ router.patch('/update/:id',uploadMultiple,updatePost);
 
 router.get('/get-all',getAllPosts);
 router.get('/get/:id',getOnePost);
+router.get('/get-all/UserPosts',getUserPosts);
 
 router.delete('/delete/:id', deletePost)
 
