@@ -10,6 +10,8 @@ const userRouter = require('./routes/user.route');
 const identityRouter = require('./routes/identity.route');
 const marketRouter = require('./routes/market.route');
 const postRouter = require('./routes/post.route');
+const commentRouter = require('./routes/comment.route');
+const likesRouter = require('./routes/likes.route');
 
 const app = express();
 
@@ -23,6 +25,8 @@ app.use('/api/user', userRouter);
 app.use('/api/market', marketRouter);
 app.use('/api/identity', identityRouter);
 app.use('/api/social/post', postRouter);
+app.use('/api/comment', commentRouter);
+app.use('/api/likes', likesRouter);
 
 app.all('*', (req, res) => {
     return notFoundError(`Can't find ${req.originalUrl} on this server!`, res);
