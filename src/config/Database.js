@@ -5,6 +5,7 @@ const Falcon = require('../models/falcon.model');
 const Identity = require('../models/identity.model');
 const Comment =require('../models/comment.model');
 const Likes = require('../models/likes.model');
+const Follow = require('../models/follow.model');
 
 class Database {
     constructor() {
@@ -30,6 +31,7 @@ class Database {
             Identity: Identity.init(this.sequelize, Sequelize),
             Comment: Comment.init(this.sequelize, Sequelize),
             Likes: Likes.init(this.sequelize, Sequelize),
+            Follow: Follow.init(this.sequelize, Sequelize),
         };
     }
 

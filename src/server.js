@@ -1,7 +1,7 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const {notFoundError} = require('./middlewares/error.messages.middleware')
 
@@ -12,6 +12,7 @@ const marketRouter = require('./routes/market.route');
 const postRouter = require('./routes/post.route');
 const commentRouter = require('./routes/comment.route');
 const likesRouter = require('./routes/likes.route');
+const followRouter = require('./routes/follow.route');
 
 const app = express();
 
@@ -24,9 +25,11 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/market', marketRouter);
 app.use('/api/identity', identityRouter);
+
 app.use('/api/social/post', postRouter);
-app.use('/api/comment', commentRouter);
-app.use('/api/likes', likesRouter);
+app.use('/api/social/comment', commentRouter);
+app.use('/api/social/likes', likesRouter);
+app.use('/api/social/follow', followRouter);
 
 app.all('*', (req, res) => {
     return notFoundError(`Can't find ${req.originalUrl} on this server!`, res);

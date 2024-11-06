@@ -150,9 +150,11 @@ CREATE TABLE Friendship (
 );
 
 CREATE TABLE Follow (
+    followID  INT PRIMARY KEY AUTO_INCREMENT,
     followerID INT,  
     followedID INT,    
-    PRIMARY KEY (followerID, followedID),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- PRIMARY KEY (followerID, followedID),
     FOREIGN KEY (followerID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (followedID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -223,4 +225,69 @@ CREATE TABLE AuctionParticipant (
     FOREIGN KEY (userID) REFERENCES User(userID)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-select * from users
+
+select  * from user;
+INSERT INTO User (
+    userID,
+    firstName,
+    lastName,
+    phone,
+    email,
+    password,
+    confirmPassword,
+    username,
+    avatarURL,
+    avatarPublicId,
+    country,
+    state,
+    city,
+    birthday,
+    description,
+    gender,
+    auctionBid,
+    role,
+    isVerified,
+    signupWay,
+    googleToken
+) VALUES
+-- Dummy record 1
+(2, 'John', 'Doe', '1234567890', 'john.doe@example.com', 'password123', 'password123', 'johndoe', 
+ "https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg", "default_j5ftby_jspjve",
+ 'USA', 'California', 'Los Angeles', '1990-01-01', 'I am a software developer.', 'male', 100.50, 'user', true, 'email', NULL),
+-- Dummy record 2
+(3, 'Jane', 'Smith', '0987654321', 'jane.smith@example.com', 'password456', 'password456', 'janesmith', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'Canada', 'Ontario', 'Toronto', '1992-02-02', 'I am a graphic designer.', 'female', 200.75, 'admin', false, 'phone', 'dummyGoogleToken123'),
+-- Dummy record 3
+(4, 'Michael', 'Johnson', '1122334455', 'michael.johnson@example.com', 'password789', 'password789', 'michaeljohnson', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'UK', 'London', 'London', '1988-03-03', 'A passionate musician.', 'male', 150.00, 'user', true, 'apple', NULL),
+-- Dummy record 4
+(5, 'Emily', 'Davis', '2233445566', 'emily.davis@example.com', 'password012', 'password012', 'emilydavis', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'Australia', 'New South Wales', 'Sydney', '1995-04-04', 'I love traveling and photography.', 'female', 180.00, 'user', false, 'twitter', 'dummyGoogleToken456'),
+ -- Dummy record 6
+(6, 'Alice', 'Brown', '4455667788', 'alice.brown@example.com', 'password678', 'password678', 'alicebrown', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'Germany', 'Berlin', 'Berlin', '1994-06-06', 'Food enthusiast and chef.', 'female', 250.30, 'user', true, 'email', NULL),
+-- Dummy record 7
+(7, 'Charles', 'Wilson', '5566778899', 'charles.wilson@example.com', 'password901', 'password901', 'charleswilson', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'France', 'Île-de-France', 'Paris', '1987-07-07', 'Tech entrepreneur.', 'male', 300.00, 'admin', true, 'phone', 'dummyGoogleToken789'),
+-- Dummy record 8
+(8, 'Sophia', 'Martinez', '6677889900', 'sophia.martinez@example.com', 'password234', 'password234', 'sophiamartinez', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'Spain', 'Madrid', 'Madrid', '1991-08-08', 'Digital artist and photographer.', 'female', 180.45, 'user', false, 'apple', NULL),
+-- Dummy record 9
+(9, 'David', 'Taylor', '7788990011', 'david.taylor@example.com', 'password567', 'password567', 'davidtaylor', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'Italy', 'Lazio', 'Rome', '1989-09-09', 'Loves architecture and history.', 'male', 190.25, 'user', true, 'google', NULL),
+ 
+ -- Dummy record 10
+(10, 'Robert', 'Williams', '3344556677', 'robert.williams@example.com', 'password345', 'password345', 'robertwilliams', 
+ 'https://res.cloudinary.com/dt6idcgyw/image/upload/v1725752451/default_j5ftby_jspjve.jpg', 'default_j5ftby_jspjve',
+ 'New Zealand', 'Wellington', 'Wellington', '1985-05-05', 'Avid reader and writer.', 'male', 90.25, 'admin', true, 'email', NULL);
+ 
+ 
+ 
+
