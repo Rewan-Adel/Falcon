@@ -2,7 +2,9 @@ const Joi = require('joi');
 
 const schemas = {
     email: Joi.object({
-        email     : Joi.string().max(100).email().required().trim(),
+        email     : Joi.string().max(100).email().required().trim().messages({
+            "string.empty": "Email is required.",
+        }),
     }).unknown(),
 
     phone: Joi.object({

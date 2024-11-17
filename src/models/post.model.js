@@ -17,6 +17,14 @@ class Post extends Model {
                 },
                 allowNull: false
             },
+            groupID: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'Group_',
+                    key: 'groupID'
+                },
+                allowNull: false
+            },
             content: {
                 type: DataTypes.STRING
             },
@@ -44,11 +52,14 @@ class Post extends Model {
             foreignKey: 'userID',
             as: 'user'
         });
+        this.belongsTo(models.Group, {
+            foreignKey: 'groupID',
+            as: 'group'
+        });
         this.hasMany(models.Comment, {
             foreignKey: 'commentID',
             as: 'comments'
         });
-        // other associations...
     }
 }
 

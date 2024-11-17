@@ -2,7 +2,8 @@ const {models} = require("../config/Database");
 const {Falcon, User} = models;
 const {
     badRequestMessage,
-    serverErrorMessage
+    serverErrorMessage,
+    unAuthorizedMessage
 } = require('../middlewares/error.messages.middleware');
 
 const {
@@ -88,7 +89,7 @@ const updateProduct = async (req, res)=>{
 
         let product = await Falcon.findByPk(req.params.id);
         if(!product) return badRequestMessage("Product not founded!", res);
-        if(product.ownerID != userID) return badRequestMessage("yYou are not allowed to update this product.",res);
+        if(product.ownerID != userID) return unAuthorizedMessage("You are not allowed to update this product.",res);
         
         await Falcon.update(value, {
             where:{ FalconID : req.params.id }
@@ -147,7 +148,7 @@ const deleteProduct = async(req, res)=>{
         const {userID} = req.user;
         const product = await Falcon.findByPk(req.params.id);
         if(!product) return badRequestMessage("Product not founded!", res);
-        if(product.ownerID != userID) return badRequestMessage("You are not allowed  to delete this product.",res);
+        if(product.ownerID != userID) return unAuthorizedMessage("You are not allowed  to delete this product.",res);
 
         await Falcon.destroy({
             where: { FalconID: req.params.id }

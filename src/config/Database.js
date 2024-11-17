@@ -6,7 +6,8 @@ const Identity = require('../models/identity.model');
 const Comment =require('../models/comment.model');
 const Likes = require('../models/likes.model');
 const Follow = require('../models/follow.model');
-
+const Group = require('../models/group.model');
+const GroupMember = require('../models/groupMember.model');
 class Database {
     constructor() {
         this.sequelize = new Sequelize({
@@ -32,6 +33,8 @@ class Database {
             Comment: Comment.init(this.sequelize, Sequelize),
             Likes: Likes.init(this.sequelize, Sequelize),
             Follow: Follow.init(this.sequelize, Sequelize),
+            Group: Group.init(this.sequelize, Sequelize),
+            GroupMember : GroupMember.init(this.sequelize, Sequelize)
         };
     }
 

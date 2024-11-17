@@ -13,6 +13,8 @@ const postRouter = require('./routes/post.route');
 const commentRouter = require('./routes/comment.route');
 const likesRouter = require('./routes/likes.route');
 const followRouter = require('./routes/follow.route');
+const groupRouter = require('./routes/group.route');
+const groupMemberRouter = require('./routes/groupMember.route');
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.use('/api/social/post', postRouter);
 app.use('/api/social/comment', commentRouter);
 app.use('/api/social/likes', likesRouter);
 app.use('/api/social/follow', followRouter);
+app.use('/api/social/group', groupRouter);
+app.use('/api/social/group/member', groupMemberRouter);
 
 app.all('*', (req, res) => {
     return notFoundError(`Can't find ${req.originalUrl} on this server!`, res);
